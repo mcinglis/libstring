@@ -1,5 +1,5 @@
 
-**Libstring** provides `StringC` (const-char-array with length) and `StringM` (char-array with length and capacity) datatypes, and functions to work with those types.
+**Libstring** provides `StringC` (const-char-array with length) and `StringM` (char-array with length and capacity) types, and functions to work with those types.
 
 
 ## Releases
