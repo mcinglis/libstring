@@ -120,6 +120,11 @@ void
 stringm__shrink_capacity( StringM * );
 
 
+void
+stringm__append( StringM *,
+                 char );
+
+
 void stringm__extend_stringc( StringM *, StringC );
 void stringm__extend_stringm( StringM *, StringM );
 void stringm__extend_arrayc ( StringM *, ArrayC_char );

@@ -183,6 +183,14 @@ stringm__shrink_capacity( StringM * const s )
 }
 
 
+void
+stringm__append( StringM * const s,
+                 char const c )
+{
+    vec_char__append( s, c );
+}
+
+
 void stringm__extend_stringc( StringM * const s, StringC const ext )
     { vec_char__extend( s, ext ); }
 
