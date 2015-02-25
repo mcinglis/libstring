@@ -7,7 +7,8 @@
         { "repo": "https://gitorious.org/mcinglis/libbase.git" },
         { "repo": "https://gitorious.org/mcinglis/libarray.git" },
         { "repo": "https://gitorious.org/mcinglis/libvec.git" }
-    ], "commands": {
+    ],
+    "commands": {
         "build": "make",
         "fast":  "make fast",
         "clean": "make clean"

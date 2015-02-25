@@ -17,8 +17,6 @@ cflags_warnings := -Wall -Wextra -pedantic \
 
 CFLAGS ?= $(cflags_std) -g $(cflags_warnings)
 
-PYTHON ?= python
-
 sources := $(wildcard *.c)
 objects := $(sources:.c=.o)
 mkdeps  := $(sources:.c=.dep.mk)
