@@ -26,10 +26,7 @@
 #include <libtypes/types.h>
 #include <libbase/char.h>
 
-
-typedef ArrayC_char StringC;
-
-typedef Vec_char StringM;
+#include "string-def.h" // StringC, StringM
 
 
 #define STRINGC( STR ) \
