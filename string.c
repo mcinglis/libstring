@@ -113,6 +113,23 @@ stringm__new_empty( size_t const capacity )
 
 
 StringM
+stringm__new_fmt( char const * const format,
+                  ... )
+{
+    ASSERT( format != NULL );
+
+    StringM s = ( StringM ){ 0 };
+    va_list ap;
+    va_start( ap, format );
+    stringm__extend_fmtv( &s, format, ap );
+    int const err = errno;
+    va_end( ap );
+    if ( err ) { errno = err; }
+    return s;
+}
+
+
+StringM
 stringm__from_mutstr( char * const str )
 {
     size_t const len = strlen_null( str );
@@ -211,93 +228,9 @@ void stringm__extend_str( StringM * const s, char const * const ext )
 
 
 void
-stringm__extend_fmt_stringc( StringM * const s,
-                             StringC const format,
-                             ... )
-{
-    ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( format ) );
-
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmt_stringm( StringM * const s,
-                             StringM const format,
-                             ... )
-{
-    ASSERT( s != NULL, stringm__is_valid( *s ), stringm__is_valid( format ) );
-
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmt_arrayc( StringM * const s,
-                            ArrayC_char const format,
-                            ... )
-{
-    ASSERT( s != NULL,
-            stringm__is_valid( *s ),
-            arrayc_char__is_valid( format ) );
-
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmt_arraym( StringM * const s,
-                            ArrayM_char const format,
-                            ... )
-{
-    ASSERT( s != NULL,
-            stringm__is_valid( *s ),
-            arraym_char__is_valid( format ) );
-
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmt_vec( StringM * const s,
-                         Vec_char const format,
-                         ... )
-{
-    ASSERT( s != NULL, stringm__is_valid( *s ), vec_char__is_valid( format ) );
-
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmt_str( StringM * const s,
-                         char const * const format,
-                         ... )
+stringm__extend_fmt( StringM * const s,
+                     char const * const format,
+                     ... )
 {
     ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
 
@@ -311,62 +244,9 @@ stringm__extend_fmt_str( StringM * const s,
 
 
 void
-stringm__extend_fmtv_stringc( StringM * const s,
-                              StringC const format,
-                              va_list ap )
-{
-    ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( format ) );
-
-    errno = 0;
-    char * const format_str = mutstr__from_stringc( format );
-    if ( errno ) { return; }
-    stringm__extend_fmtv( s, format_str, ap );
-    int const err = errno;
-    free( format_str );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmtv_stringm( StringM * const s,
-                              StringM const format,
-                              va_list ap )
-{
-    stringm__extend_fmtv( s, stringc__from( format ), ap );
-}
-
-
-void
-stringm__extend_fmtv_arrayc( StringM * const s,
-                             ArrayC_char const format,
-                             va_list ap )
-{
-    stringm__extend_fmtv( s, stringc__from( format ), ap );
-}
-
-
-void
-stringm__extend_fmtv_arraym( StringM * const s,
-                             ArrayM_char const format,
-                             va_list ap )
-{
-    stringm__extend_fmtv( s, stringc__from( format ), ap );
-}
-
-
-void
-stringm__extend_fmtv_vec( StringM * const s,
-                          Vec_char const format,
-                          va_list ap )
-{
-    stringm__extend_fmtv( s, stringc__from( format ), ap );
-}
-
-
-void
-stringm__extend_fmtv_str( StringM * const s,
-                          char const * const format,
-                          va_list ap )
+stringm__extend_fmtv( StringM * const s,
+                      char const * const format,
+                      va_list ap )
 {
     ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
 

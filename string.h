@@ -29,6 +29,14 @@
 #include "string-def.h" // StringC, StringM
 
 
+// TODO: abstract this to a library / header file some day?
+#ifdef HAVE_ATTRIBUTE_FORMAT
+#define ATTR_FORMAT __attribute__((format(printf, 2, 3)))
+#else
+#define ATTR_FORMAT
+#endif
+
+
 #define STRINGC( STR ) \
     { .e = ( STR ), \
       .length = ( sizeof ( STR ) ) - 1 }
@@ -70,6 +78,12 @@ stringm__new( char const * str,
 
 StringM
 stringm__new_empty( size_t capacity );
+
+
+StringM
+stringm__new_fmt( char const * format,
+                  ... )
+    ATTR_FORMAT;
 
 
 StringM stringm__from_mutstr( char * str );
@@ -138,45 +152,17 @@ void stringm__extend_str    ( StringM *, char const * str );
     )( STRING, EXT )
 
 
-#ifdef HAVE_ATTRIBUTE_FORMAT
-#define A __attribute__((format(printf, 2, 3)))
-#else
-#define A
-#endif
-
-void stringm__extend_fmt_stringc( StringM *, StringC format, ... );
-void stringm__extend_fmt_stringm( StringM *, StringM format, ... );
-void stringm__extend_fmt_arrayc( StringM *, ArrayC_char format, ... );
-void stringm__extend_fmt_arraym( StringM *, ArrayM_char format, ... );
-void stringm__extend_fmt_vec( StringM *, Vec_char format, ... );
-void stringm__extend_fmt_str( StringM *, char const * format, ... ) A;
-
-#undef A
-
-#define stringm__extend_fmt( STRING, FORMAT, ... ) \
-    _Generic( ( FORMAT ), \
-        ArrayC_char: stringm__extend_fmt_arrayc, \
-        ArrayM_char: stringm__extend_fmt_arraym, \
-        Vec_char:    stringm__extend_fmt_vec, \
-        default:     stringm__extend_fmt_str \
-    )( STRING, FORMAT, __VA_ARGS__ )
+void
+stringm__extend_fmt( StringM *,
+                     char const * format,
+                     ... )
+    ATTR_FORMAT;
 
 
-void stringm__extend_fmtv_stringc( StringM *, StringC format, va_list );
-void stringm__extend_fmtv_stringm( StringM *, StringM format, va_list );
-void stringm__extend_fmtv_arrayc( StringM *, ArrayC_char format, va_list );
-void stringm__extend_fmtv_arraym( StringM *, ArrayM_char format, va_list );
-void stringm__extend_fmtv_vec( StringM *, Vec_char format, va_list );
-void stringm__extend_fmtv_str( StringM *, char const * format, va_list );
-
-#define stringm__extend_fmtv( STRING, FORMAT, VA_LIST ) \
-    _Generic( ( FORMAT ), \
-        ArrayC_char: stringm__extend_fmtv_arrayc, \
-        ArrayM_char: stringm__extend_fmtv_arraym, \
-        Vec_char:    stringm__extend_fmtv_vec, \
-        default:     stringm__extend_fmtv_str \
-    )( STRING, FORMAT, VA_LIST )
-
+void
+stringm__extend_fmtv( StringM *,
+                      char const * format,
+                      va_list );
 
 
 bool stringc__equal_stringc( StringC, StringC );
@@ -234,6 +220,8 @@ arraym_char__from_stringm( StringM );
 Vec_char
 vec_char__from_stringm( StringM );
 
+
+#undef ATTR_FORMAT
 
 
 #endif
