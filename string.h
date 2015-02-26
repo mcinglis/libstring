@@ -144,11 +144,11 @@ void stringm__extend_str    ( StringM *, char const * str );
 #define A
 #endif
 
-void stringm__extend_fmt_stringc( StringM *, StringC format, ... ) A;
-void stringm__extend_fmt_stringm( StringM *, StringM format, ... ) A;
-void stringm__extend_fmt_arrayc( StringM *, ArrayC_char format, ... ) A;
-void stringm__extend_fmt_arraym( StringM *, ArrayM_char format, ... ) A;
-void stringm__extend_fmt_vec( StringM *, Vec_char format, ... ) A;
+void stringm__extend_fmt_stringc( StringM *, StringC format, ... );
+void stringm__extend_fmt_stringm( StringM *, StringM format, ... );
+void stringm__extend_fmt_arrayc( StringM *, ArrayC_char format, ... );
+void stringm__extend_fmt_arraym( StringM *, ArrayM_char format, ... );
+void stringm__extend_fmt_vec( StringM *, Vec_char format, ... );
 void stringm__extend_fmt_str( StringM *, char const * format, ... ) A;
 
 #undef A
