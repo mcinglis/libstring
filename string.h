@@ -70,6 +70,10 @@ StringC stringc__from_str    ( char const * str );
     )( X )
 
 
+void
+stringm__free( StringM * );
+
+
 StringM
 stringm__new( char const * str,
               size_t length,
@@ -84,6 +88,12 @@ StringM
 stringm__new_fmt( char const * format,
                   ... )
     ATTR_FORMAT;
+
+
+void
+stringm__fmt_into( StringM *,
+                   char const * format,
+                   ... );
 
 
 StringM stringm__from_mutstr( char * str );
@@ -114,8 +124,20 @@ StringM stringm__copy_str    ( char const * str );
     )( X )
 
 
-void
-stringm__free( StringM * );
+void stringm__copy_stringc_into( StringM *, StringC );
+void stringm__copy_stringm_into( StringM *, StringM );
+void stringm__copy_arrayc_into( StringM *, ArrayC_char );
+void stringm__copy_arraym_into( StringM *, ArrayM_char );
+void stringm__copy_vec_into( StringM *, Vec_char );
+void stringm__copy_str_into( StringM *, char const * );
+
+#define stringm__copy_into( S, FROM ) \
+    _Generic( ( FROM ), \
+        ArrayC_char: stringm__copy_arrayc_into, \
+        ArrayM_char: stringm__copy_arraym_into, \
+        Vec_char:    stringm__copy_vec_into, \
+        default:     stringm__copy_str_into \
+    )( S, FROM )
 
 
 void

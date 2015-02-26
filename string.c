@@ -94,6 +94,13 @@ StringC stringc__from_str( char const * const str )
     { return stringc__new( str, strlen_null( str ) ); }
 
 
+void
+stringm__free( StringM * const s )
+{
+    vec_char__free( s );
+}
+
+
 StringM
 stringm__new( char const * const str,
               size_t const length,
@@ -126,6 +133,23 @@ stringm__new_fmt( char const * const format,
     va_end( ap );
     if ( err ) { errno = err; }
     return s;
+}
+
+
+void
+stringm__fmt_into( StringM * const s,
+                   char const * const format,
+                   ... )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
+
+    va_list ap;
+    va_start( ap, format );
+    s->length = 0;
+    stringm__extend_fmtv( s, format, ap );
+    int const err = errno;
+    va_end( ap );
+    if ( err ) { errno = err; }
 }
 
 
@@ -172,9 +196,53 @@ StringM stringm__copy_str( char const * str )
 
 
 void
-stringm__free( StringM * const s )
+stringm__copy_stringc_into( StringM * const s,
+                            StringC const from )
 {
-    vec_char__free( s );
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( from ) );
+
+    s->length = 0;
+    stringm__extend( s, from );
+}
+
+
+void
+stringm__copy_stringm_into( StringM * const s,
+                            StringM const from )
+{
+    stringm__copy_stringc_into( s, stringc__from( from ) );
+}
+
+
+void
+stringm__copy_arrayc_into( StringM * const s,
+                           ArrayC_char const from )
+{
+    stringm__copy_stringc_into( s, stringc__from( from ) );
+}
+
+
+void
+stringm__copy_arraym_into( StringM * const s,
+                           ArrayM_char const from )
+{
+    stringm__copy_stringc_into( s, stringc__from( from ) );
+}
+
+
+void
+stringm__copy_vec_into( StringM * const s,
+                        Vec_char const from )
+{
+    stringm__copy_stringc_into( s, stringc__from( from ) );
+}
+
+
+void
+stringm__copy_str_into( StringM * const s,
+                        char const * const from )
+{
+    stringm__copy_stringc_into( s, stringc__from( from ) );
 }
 
 
