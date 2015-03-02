@@ -24,7 +24,6 @@
 #include <stdarg.h>
 
 #include <libtypes/types.h>
-#include <libbase/char.h>
 
 #include "string-def.h" // StringC, StringM
 

@@ -21,7 +21,8 @@
 #define LIBSTRING_STRING_DEF_H
 
 
-#include <libbase/char.h>
+#include <libarray/def/array-char.h>
+#include <libvec/def/vec-char.h>
 
 
 typedef ArrayC_char StringC;
