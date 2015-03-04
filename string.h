@@ -116,9 +116,9 @@ StringM stringm__copy_str    ( char const * str );
 
 #define stringm__copy( X ) \
     _Generic( ( X ), \
-        ArrayC_char: stringm__copy_arrayc, \
+        StringC:     stringm__copy_stringc, \
         ArrayM_char: stringm__copy_arraym, \
-        Vec_char:    stringm__copy_vec, \
+        StringM:     stringm__copy_stringm, \
         default:     stringm__copy_str \
     )( X )
 
@@ -132,9 +132,9 @@ void stringm__copy_str_into( StringM *, char const * );
 
 #define stringm__copy_into( S, FROM ) \
     _Generic( ( FROM ), \
-        ArrayC_char: stringm__copy_arrayc_into, \
+        StringC:     stringm__copy_stringc_into, \
         ArrayM_char: stringm__copy_arraym_into, \
-        Vec_char:    stringm__copy_vec_into, \
+        StringM:     stringm__copy_stringm_into, \
         default:     stringm__copy_str_into \
     )( S, FROM )
 
@@ -166,9 +166,9 @@ void stringm__extend_str    ( StringM *, char const * str );
 
 #define stringm__extend( STRING, EXT ) \
     _Generic( ( EXT ), \
-        ArrayC_char: stringm__extend_arrayc, \
+        StringC:     stringm__extend_stringc, \
         ArrayM_char: stringm__extend_arraym, \
-        Vec_char:    stringm__extend_vec, \
+        StringM:     stringm__extend_stringm, \
         default:     stringm__extend_str \
     )( STRING, EXT )
 
@@ -195,9 +195,9 @@ bool stringc__equal_str    ( StringC, char const * str );
 
 #define stringc__equal( STRING, X ) \
     _Generic( ( X ), \
-        ArrayC_char: stringc__equal_arrayc, \
+        StringC:     stringc__equal_stringc, \
         ArrayM_char: stringc__equal_arraym, \
-        Vec_char:    stringc__equal_vec, \
+        StringM:     stringc__equal_stringm, \
         default:     stringc__equal_str \
     )( STRING, X )
 
@@ -211,9 +211,9 @@ bool stringm__equal_str( StringM, char const * str );
 
 #define stringm__equal( STRING, X ) \
     _Generic( ( X ), \
-        ArrayC_char: stringm__equal_arrayc, \
+        StringC:     stringm__equal_stringc, \
         ArrayM_char: stringm__equal_arraym, \
-        Vec_char:    stringm__equal_vec, \
+        StringM:     stringm__equal_stringm, \
         default:     stringm__equal_str \
     )( STRING, X )
 
