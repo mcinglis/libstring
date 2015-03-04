@@ -493,7 +493,7 @@ stringc__last( StringC const sc )
 char
 stringm__last( StringM const sm )
 {
-    return stringc__first( stringc__from( sm ) );
+    return stringc__last( stringc__from( sm ) );
 }
 
 
