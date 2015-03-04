@@ -427,6 +427,76 @@ stringm__equal_str( StringM const x,
 }
 
 
+char
+stringc__get( StringC const sc,
+              size_t const index )
+{
+    ASSERT( stringc__is_valid( sc ), index < sc.length );
+
+    return sc.e[ index ];
+}
+
+
+char
+stringm__get( StringM const sm,
+              size_t const index )
+{
+    return stringc__get( stringc__from( sm ), index );
+}
+
+
+char const *
+stringc__get_ptr( StringC const sc,
+                  size_t const index )
+{
+    ASSERT( stringc__is_valid( sc ), index < sc.length );
+
+    return arrayc_char__get_ptr( sc, index );
+}
+
+
+char *
+stringm__get_ptr( StringM const sm,
+                  size_t const index )
+{
+    ASSERT( stringm__is_valid( sm ), index < sm.length );
+
+    return vec_char__get_ptr( sm, index );
+}
+
+
+char
+stringc__first( StringC const sc )
+{
+    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
+
+    return arrayc_char__first( sc );
+}
+
+
+char
+stringm__first( StringM const sm )
+{
+    return stringc__first( stringc__from( sm ) );
+}
+
+
+char
+stringc__last( StringC const sc )
+{
+    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
+
+    return arrayc_char__last( sc );
+}
+
+
+char
+stringm__last( StringM const sm )
+{
+    return stringc__first( stringc__from( sm ) );
+}
+
+
 char *
 mutstr__from_stringc( StringC const string )
 {

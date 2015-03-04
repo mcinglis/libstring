@@ -218,6 +218,25 @@ bool stringm__equal_str( StringM, char const * str );
     )( STRING, X )
 
 
+char stringc__get( StringC, size_t index );
+char stringm__get( StringM, size_t index );
+
+
+char const *
+stringc__get_ptr( StringC, size_t index );
+
+char *
+stringm__get_ptr( StringM, size_t index );
+
+
+char stringc__first( StringC );
+char stringm__first( StringM );
+
+
+char stringc__last( StringC );
+char stringm__last( StringM );
+
+
 char *
 mutstr__from_stringc( StringC );
 
