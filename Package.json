@@ -21,11 +21,16 @@
         { "repo": [ "https://bitbucket.org/mcinglis/libvec.git",
                     "https://github.com/mcinglis/libvec.git",
                     "https://gitorious.org/mcinglis/libvec.git" ]
+        },
+        { "dev":  true,
+          "repo": [ "https://bitbucket.org/mcinglis/tplrender.git",
+                    "https://github.com/mcinglis/tplrender.git",
+                    "https://gitorious.org/mcinglis/tplrender.git" ]
         }
     ],
     "commands": {
         "build": "make",
-        "fast":  "make fast",
-        "clean": "make clean"
+        "clean": "make clean",
+        "test":  "make test"
     }
 }

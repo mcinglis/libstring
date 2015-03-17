@@ -25,7 +25,7 @@
 
 #include <libtypes/types.h>
 
-#include "string-def.h" // StringC, StringM
+#include "def/string.h"
 
 
 // TODO: abstract this to a library / header file some day?
@@ -36,17 +36,14 @@
 #endif
 
 
-#define STRINGC( STR ) \
-    { .e = ( STR ), \
-      .length = ( sizeof ( STR ) ) - 1 }
+
+///////////////////////////////////
+/// STRINGC FUNCTIONS
+///////////////////////////////////
 
 
 bool
 stringc__is_valid( StringC );
-
-
-bool
-stringm__is_valid( StringM );
 
 
 StringC
@@ -54,19 +51,63 @@ stringc__new( char const * str,
               size_t length );
 
 
-StringC stringc__from_stringm( StringM );
-StringC stringc__from_arrayc ( ArrayC_char );
-StringC stringc__from_arraym ( ArrayM_char );
-StringC stringc__from_vec    ( Vec_char );
-StringC stringc__from_str    ( char const * str );
+StringC stringc__view_stringm( StringM );
+StringC stringc__view_arrayc ( ArrayC_char );
+StringC stringc__view_arraym ( ArrayM_char );
+StringC stringc__view_vec    ( Vec_char );
+StringC stringc__view_str    ( char const * str );
 
-#define stringc__from( X ) \
+#define stringc__view( X ) \
     _Generic( ( X ), \
-        ArrayC_char: stringc__from_arrayc, \
-        ArrayM_char: stringc__from_arraym, \
-        Vec_char:    stringc__from_vec, \
-        default:     stringc__from_str \
+        ArrayC_char: stringc__view_arrayc, \
+        ArrayM_char: stringc__view_arraym, \
+        Vec_char:    stringc__view_vec, \
+        default:     stringc__view_str \
     )( X )
+
+
+bool stringc__equal_stringc( StringC, StringC );
+bool stringc__equal_stringm( StringC, StringM );
+bool stringc__equal_arrayc ( StringC, ArrayC_char );
+bool stringc__equal_arraym ( StringC, ArrayM_char );
+bool stringc__equal_vec    ( StringC, Vec_char );
+bool stringc__equal_str    ( StringC, char const * str );
+
+#define stringc__equal( STRING, X ) \
+    _Generic( ( X ), \
+        StringC:     stringc__equal_stringc, \
+        ArrayM_char: stringc__equal_arraym, \
+        StringM:     stringc__equal_stringm, \
+        default:     stringc__equal_str \
+    )( STRING, X )
+
+
+char
+stringc__get( StringC,
+              size_t index );
+
+
+char const *
+stringc__get_ptr( StringC,
+                  size_t index );
+
+
+char
+stringc__first( StringC );
+
+
+char
+stringc__last( StringC );
+
+
+
+///////////////////////////////////
+/// STRINGM FUNCTIONS
+///////////////////////////////////
+
+
+bool
+stringm__is_valid( StringM );
 
 
 void
@@ -95,15 +136,15 @@ stringm__fmt_into( StringM *,
                    ... );
 
 
-StringM stringm__from_mutstr( char * str );
-StringM stringm__from_arraym( ArrayM_char );
-StringM stringm__from_vec   ( Vec_char );
+StringM stringm__view_strm  ( char * str );
+StringM stringm__view_arraym( ArrayM_char );
+StringM stringm__view_vec   ( Vec_char );
 
-#define stringm__from( X ) \
+#define stringm__view( X ) \
     _Generic( ( X ), \
-        ArrayM_char: stringm__from_arraym, \
-        Vec_char:    stringm__from_vec, \
-        default:     stringm__from_mutstr \
+        ArrayM_char: stringm__view_arraym, \
+        Vec_char:    stringm__view_vec, \
+        default:     stringm__view_strm \
     )( X )
 
 
@@ -140,8 +181,8 @@ void stringm__copy_str_into( StringM *, char const * );
 
 
 void
-stringm__set_capacity( StringM *,
-                       size_t new_capacity );
+stringm__realloc( StringM *,
+                  size_t new_capacity );
 
 
 void
@@ -186,22 +227,6 @@ stringm__extend_fmtv( StringM *,
                       va_list );
 
 
-bool stringc__equal_stringc( StringC, StringC );
-bool stringc__equal_stringm( StringC, StringM );
-bool stringc__equal_arrayc ( StringC, ArrayC_char );
-bool stringc__equal_arraym ( StringC, ArrayM_char );
-bool stringc__equal_vec    ( StringC, Vec_char );
-bool stringc__equal_str    ( StringC, char const * str );
-
-#define stringc__equal( STRING, X ) \
-    _Generic( ( X ), \
-        StringC:     stringc__equal_stringc, \
-        ArrayM_char: stringc__equal_arraym, \
-        StringM:     stringc__equal_stringm, \
-        default:     stringc__equal_str \
-    )( STRING, X )
-
-
 bool stringm__equal_stringc( StringM, StringC );
 bool stringm__equal_stringm( StringM, StringM );
 bool stringm__equal_arrayc( StringM, ArrayC_char );
@@ -218,47 +243,56 @@ bool stringm__equal_str( StringM, char const * str );
     )( STRING, X )
 
 
-char stringc__get( StringC, size_t index );
-char stringm__get( StringM, size_t index );
-
-
-char const *
-stringc__get_ptr( StringC, size_t index );
-
-char *
-stringm__get_ptr( StringM, size_t index );
-
-
-char stringc__first( StringC );
-char stringm__first( StringM );
-
-
-char stringc__last( StringC );
-char stringm__last( StringM );
+char
+stringm__get( StringM,
+              size_t index );
 
 
 char *
-mutstr__from_stringc( StringC );
+stringm__get_ptr( StringM,
+                  size_t index );
+
+
+char
+stringm__first( StringM );
+
+
+char
+stringm__last( StringM );
+
+
+
+
+
+///////////////////////////////////
+/// EXTENSIONS
+///////////////////////////////////
 
 
 char *
-mutstr__from_stringm( StringM );
+strm__copy_stringc( StringC );
+
+
+char *
+strm__copy_stringm( StringM );
 
 
 ArrayC_char
-arrayc_char__from_stringc( StringC );
+arrayc_char__view_stringc( StringC );
 
 
 ArrayC_char
-arrayc_char__from_stringm( StringM );
+arrayc_char__view_stringm( StringM );
 
 
 ArrayM_char
-arraym_char__from_stringm( StringM );
+arraym_char__view_stringm( StringM );
 
 
 Vec_char
-vec_char__from_stringm( StringM );
+vec_char__view_stringm( StringM );
+
+
 
 
 #undef ATTR_FORMAT

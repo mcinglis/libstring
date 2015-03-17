@@ -17,17 +17,45 @@
 // along with Libstring. If not, see <https://gnu.org/licenses/>.
 
 
-#ifndef LIBSTRING_STRING_DEF_H
-#define LIBSTRING_STRING_DEF_H
+#ifndef LIBSTRING_DEF_STRING_H
+#define LIBSTRING_DEF_STRING_H
 
 
+#include <libtypes/types.h>
+#include <libmacro/logic.h>
 #include <libarray/def/array-char.h>
 #include <libvec/def/vec-char.h>
 
 
 typedef ArrayC_char StringC;
 
+#define STRINGC_INVARIANTS( S ) \
+    IMPLIES( ( S ).e == NULL, ( S ).length == 0 )
+
+#define STRINGC( STR ) \
+    { .e      = ( STR ), \
+      .length = ( sizeof ( STR ) ) - 1 }
+
+#define STRINGC0( STR ) \
+    { .e      = ( STR ), \
+      .length = sizeof ( STR ) }
+
+
 typedef Vec_char StringM;
+
+#define STRINGM_INVARIANTS( S ) \
+    IMPLIES( ( S ).e == NULL, ( S ).length == 0 ), \
+    ( S ).length <= ( S ).capacity
+
+#define STRINGM( STR ) \
+    { .e        = ( char[] ){ STR }, \
+      .length   = ( sizeof ( STR ) ) - 1, \
+      .capacity = sizeof ( STR ) }
+
+#define STRINGM0( STR ) \
+    { .e        = ( char[] ){ STR }, \
+      .length   = sizeof ( STR ), \
+      .capacity = sizeof ( STR ) }
 
 
 #endif

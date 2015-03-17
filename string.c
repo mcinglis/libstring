@@ -54,17 +54,17 @@ vasprintf_err( char * * const strp,
 }
 
 
+
+
+///////////////////////////////////
+/// STRINGC FUNCTIONS
+///////////////////////////////////
+
+
 bool
 stringc__is_valid( StringC const s )
 {
-    return arrayc_char__is_valid( s );
-}
-
-
-bool
-stringm__is_valid( StringM const s )
-{
-    return vec_char__is_valid( s );
+    return ALL( STRINGC_INVARIANTS( s ) );
 }
 
 
@@ -78,20 +78,121 @@ stringc__new( char const * const str,
 }
 
 
-StringC stringc__from_stringm( StringM const s )
+StringC stringc__view_stringm( StringM const s )
     { return stringc__new( s.e, s.length ); }
 
-StringC stringc__from_arrayc( ArrayC_char const xs )
+StringC stringc__view_arrayc( ArrayC_char const xs )
     { return stringc__new( xs.e, xs.length ); }
 
-StringC stringc__from_arraym( ArrayM_char const xs )
+StringC stringc__view_arraym( ArrayM_char const xs )
     { return stringc__new( xs.e, xs.length ); }
 
-StringC stringc__from_vec( Vec_char const v )
+StringC stringc__view_vec( Vec_char const v )
     { return stringc__new( v.e, v.length ); }
 
-StringC stringc__from_str( char const * const str )
+StringC stringc__view_str( char const * const str )
     { return stringc__new( str, strlen_null( str ) ); }
+
+
+bool
+stringc__equal_stringc( StringC const x,
+                        StringC const y )
+{
+    return arrayc_char__equal( x, y );
+}
+
+
+bool
+stringc__equal_stringm( StringC const x,
+                        StringM const y )
+{
+    return stringc__equal( x, stringc__view( y ) );
+}
+
+
+bool
+stringc__equal_arrayc( StringC const x,
+                       ArrayC_char const y )
+{
+    return stringc__equal( x, stringc__view( y ) );
+}
+
+
+bool
+stringc__equal_arraym( StringC const x,
+                       ArrayM_char const y )
+{
+    return stringc__equal( x, stringc__view( y ) );
+}
+
+
+bool
+stringc__equal_vec( StringC const x,
+                    Vec_char const y )
+{
+    return stringc__equal( x, stringc__view( y ) );
+}
+
+
+bool
+stringc__equal_str( StringC const x,
+                    char const * const y )
+{
+    return stringc__equal( x, stringc__view( y ) );
+}
+
+
+char
+stringc__get( StringC const sc,
+              size_t const index )
+{
+    ASSERT( stringc__is_valid( sc ), index < sc.length );
+
+    return sc.e[ index ];
+}
+
+
+char const *
+stringc__get_ptr( StringC const sc,
+                  size_t const index )
+{
+    ASSERT( stringc__is_valid( sc ), index < sc.length );
+
+    return arrayc_char__get_ptr( sc, index );
+}
+
+
+char
+stringc__first( StringC const sc )
+{
+    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
+
+    return arrayc_char__first( sc );
+}
+
+
+char
+stringc__last( StringC const sc )
+{
+    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
+
+    return arrayc_char__last( sc );
+}
+
+
+
+
+
+///////////////////////////////////
+/// STRINGM FUNCTIONS
+///////////////////////////////////
+
+
+bool
+stringm__is_valid( StringM const s )
+{
+    return vec_char__is_valid( s );
+}
 
 
 void
@@ -154,7 +255,7 @@ stringm__fmt_into( StringM * const s,
 
 
 StringM
-stringm__from_mutstr( char * const str )
+stringm__view_strm( char * const str )
 {
     size_t const len = strlen_null( str );
     return ( StringM ){ .e = str, .length = len, .capacity = len };
@@ -162,14 +263,14 @@ stringm__from_mutstr( char * const str )
 
 
 StringM
-stringm__from_arraym( ArrayM_char const xs )
+stringm__view_arraym( ArrayM_char const xs )
 {
-    return vec_char__from_arraym( xs );
+    return vec_char__view_arraym( xs );
 }
 
 
 StringM
-stringm__from_vec( Vec_char const v )
+stringm__view_vec( Vec_char const v )
 {
     return v;
 }
@@ -210,7 +311,7 @@ void
 stringm__copy_stringm_into( StringM * const s,
                             StringM const from )
 {
-    stringm__copy_stringc_into( s, stringc__from( from ) );
+    stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
 
@@ -218,7 +319,7 @@ void
 stringm__copy_arrayc_into( StringM * const s,
                            ArrayC_char const from )
 {
-    stringm__copy_stringc_into( s, stringc__from( from ) );
+    stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
 
@@ -226,7 +327,7 @@ void
 stringm__copy_arraym_into( StringM * const s,
                            ArrayM_char const from )
 {
-    stringm__copy_stringc_into( s, stringc__from( from ) );
+    stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
 
@@ -234,7 +335,7 @@ void
 stringm__copy_vec_into( StringM * const s,
                         Vec_char const from )
 {
-    stringm__copy_stringc_into( s, stringc__from( from ) );
+    stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
 
@@ -242,15 +343,15 @@ void
 stringm__copy_str_into( StringM * const s,
                         char const * const from )
 {
-    stringm__copy_stringc_into( s, stringc__from( from ) );
+    stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
 
 void
-stringm__set_capacity( StringM * const s,
-                       size_t const new_capacity )
+stringm__realloc( StringM * const s,
+                  size_t const new_capacity )
 {
-    vec_char__set_capacity( s, new_capacity );
+    vec_char__realloc( s, new_capacity );
 }
 
 
@@ -277,22 +378,22 @@ stringm__append( StringM * const s,
 
 
 void stringm__extend_stringc( StringM * const s, StringC const ext )
-    { vec_char__extend( s, ext ); }
+    { vec_char__extend_arrayc( s, ext ); }
 
 void stringm__extend_stringm( StringM * const s, StringM const ext )
-    { vec_char__extend( s, ext ); }
+    { vec_char__extend_vec( s, ext ); }
 
 void stringm__extend_arrayc( StringM * const s, ArrayC_char const ext )
-    { vec_char__extend( s, ext ); }
+    { vec_char__extend_arrayc( s, ext ); }
 
 void stringm__extend_arraym( StringM * const s, ArrayM_char const ext )
-    { vec_char__extend( s, ext ); }
+    { vec_char__extend_arraym( s, ext ); }
 
 void stringm__extend_vec( StringM * const s, Vec_char const ext )
-    { vec_char__extend( s, ext ); }
+    { vec_char__extend_vec( s, ext ); }
 
 void stringm__extend_str( StringM * const s, char const * const ext )
-    { vec_char__extend( s, stringc__from( ext ) ); }
+    { stringm__extend_stringc( s, stringc__view( ext ) ); }
 
 
 void
@@ -332,58 +433,10 @@ stringm__extend_fmtv( StringM * const s,
 
 
 bool
-stringc__equal_stringc( StringC const x,
-                        StringC const y )
-{
-    return arrayc_char__equal( x, y );
-}
-
-
-bool
-stringc__equal_stringm( StringC const x,
-                        StringM const y )
-{
-    return stringc__equal( x, stringc__from( y ) );
-}
-
-
-bool
-stringc__equal_arrayc( StringC const x,
-                       ArrayC_char const y )
-{
-    return stringc__equal( x, stringc__from( y ) );
-}
-
-
-bool
-stringc__equal_arraym( StringC const x,
-                       ArrayM_char const y )
-{
-    return stringc__equal( x, stringc__from( y ) );
-}
-
-
-bool
-stringc__equal_vec( StringC const x,
-                    Vec_char const y )
-{
-    return stringc__equal( x, stringc__from( y ) );
-}
-
-
-bool
-stringc__equal_str( StringC const x,
-                    char const * const y )
-{
-    return stringc__equal( x, stringc__from( y ) );
-}
-
-
-bool
 stringm__equal_stringc( StringM const x,
                         StringC const y )
 {
-    return stringc__equal( stringc__from( x ), y );
+    return stringc__equal( stringc__view( x ), y );
 }
 
 
@@ -391,7 +444,7 @@ bool
 stringm__equal_stringm( StringM const x,
                         StringM const y )
 {
-    return stringm__equal( x, stringc__from( y ) );
+    return stringm__equal( x, stringc__view( y ) );
 }
 
 
@@ -399,7 +452,7 @@ bool
 stringm__equal_arrayc( StringM const x,
                        ArrayC_char const y )
 {
-    return stringm__equal( x, stringc__from( y ) );
+    return stringm__equal( x, stringc__view( y ) );
 }
 
 
@@ -407,7 +460,7 @@ bool
 stringm__equal_arraym( StringM const x,
                        ArrayM_char const y )
 {
-    return stringm__equal( x, stringc__from( y ) );
+    return stringm__equal( x, stringc__view( y ) );
 }
 
 
@@ -415,7 +468,7 @@ bool
 stringm__equal_vec( StringM const x,
                     Vec_char const y )
 {
-    return stringm__equal( x, stringc__from( y ) );
+    return stringm__equal( x, stringc__view( y ) );
 }
 
 
@@ -423,17 +476,7 @@ bool
 stringm__equal_str( StringM const x,
                     char const * const y )
 {
-    return stringm__equal( x, stringc__from( y ) );
-}
-
-
-char
-stringc__get( StringC const sc,
-              size_t const index )
-{
-    ASSERT( stringc__is_valid( sc ), index < sc.length );
-
-    return sc.e[ index ];
+    return stringm__equal( x, stringc__view( y ) );
 }
 
 
@@ -441,17 +484,7 @@ char
 stringm__get( StringM const sm,
               size_t const index )
 {
-    return stringc__get( stringc__from( sm ), index );
-}
-
-
-char const *
-stringc__get_ptr( StringC const sc,
-                  size_t const index )
-{
-    ASSERT( stringc__is_valid( sc ), index < sc.length );
-
-    return arrayc_char__get_ptr( sc, index );
+    return stringc__get( stringc__view( sm ), index );
 }
 
 
@@ -466,39 +499,27 @@ stringm__get_ptr( StringM const sm,
 
 
 char
-stringc__first( StringC const sc )
-{
-    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
-
-    return arrayc_char__first( sc );
-}
-
-
-char
 stringm__first( StringM const sm )
 {
-    return stringc__first( stringc__from( sm ) );
-}
-
-
-char
-stringc__last( StringC const sc )
-{
-    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
-
-    return arrayc_char__last( sc );
+    return stringc__first( stringc__view( sm ) );
 }
 
 
 char
 stringm__last( StringM const sm )
 {
-    return stringc__last( stringc__from( sm ) );
+    return stringc__last( stringc__view( sm ) );
 }
 
 
+
+
+
+
+
+
 char *
-mutstr__from_stringc( StringC const string )
+strm__copy_stringc( StringC const string )
 {
     ASSERT( stringc__is_valid( string ) );
 
@@ -516,37 +537,37 @@ mutstr__from_stringc( StringC const string )
 
 
 char *
-mutstr__from_stringm( StringM const string )
+strm__copy_stringm( StringM const string )
 {
     ASSERT( stringm__is_valid( string ) );
 
-    return mutstr__from_stringc( stringc__from_stringm( string ) );
+    return strm__copy_stringc( stringc__view_stringm( string ) );
 }
 
 
 ArrayC_char
-arrayc_char__from_stringc( StringC const s )
+arrayc_char__view_stringc( StringC const s )
 {
     return s;
 }
 
 
 ArrayC_char
-arrayc_char__from_stringm( StringM const s )
+arrayc_char__view_stringm( StringM const s )
 {
-    return arrayc_char__from_stringc( stringc__from_stringm( s ) );
+    return arrayc_char__view_stringc( stringc__view_stringm( s ) );
 }
 
 
 ArrayM_char
-arraym_char__from_stringm( StringM const s )
+arraym_char__view_stringm( StringM const s )
 {
-    return arraym_char__from_vec( s );
+    return arraym_char__view_vec( s );
 }
 
 
 Vec_char
-vec_char__from_stringm( StringM const s )
+vec_char__view_stringm( StringM const s )
 {
     return s;
 }
