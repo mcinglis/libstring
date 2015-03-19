@@ -20,10 +20,12 @@ $ puck execute build
 
 There's nothing magic to what Puck does, so if you would prefer, you can set up the dependencies manually. You just need to have the dependencies in the `deps` directory within the Libstring directory, and have them built (if necessary) before building Libstring
 
+There's no `build` command specified for Libstring, because you should manage the building of Libstring's sources in your own project. The dependencies rely on generated source files, and you would want to have that process integrated with the rest of your project, avoiding multiple libraries trying to generate the same file differently. Despite this, there is a `Makefile` provided with the bare minimum to build the tests.
+
 
 ## Collaboration
 
-Libstring is available at [Gitorious](https://gitorious.org/mcinglis/libstring), [Bitbucket](https://bitbucket.org/mcinglis/libstring), and [GitHub](https://github.com/mcinglis/libstring).
+Libstring is available at [Bitbucket](https://bitbucket.org/mcinglis/libstring) and [GitHub](https://github.com/mcinglis/libstring).
 
 Questions, discussion, bug reports and feature requests are welcome at [the GitHub issue tracker](https://github.com/mcinglis/libstring/issues), or via [emails](mailto:me@minglis.id.au).
 

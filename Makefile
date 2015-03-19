@@ -5,10 +5,10 @@
 
 DEPS_DIR ?= ./deps
 
-LIBBASE  ?= $(DEPS_DIR)/libbase
-LIBMAYBE ?= $(DEPS_DIR)/libmaybe
-LIBARRAY ?= $(DEPS_DIR)/libarray
-LIBVEC   ?= $(DEPS_DIR)/libvec
+LIBBASE  := $(DEPS_DIR)/libbase
+LIBMAYBE := $(DEPS_DIR)/libmaybe
+LIBARRAY := $(DEPS_DIR)/libarray
+LIBVEC   := $(DEPS_DIR)/libvec
 
 CPPFLAGS += -I$(DEPS_DIR)
 
@@ -80,7 +80,7 @@ mkdeps  := $(objects:.o=.dep.mk) $(test_gen_objects:.o=.dep.mk)
 ##############################
 
 .PHONY: all
-all:
+all: tests
 
 .PHONY: tests
 tests: $(test_binaries)

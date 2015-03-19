@@ -29,7 +29,6 @@
         }
     ],
     "commands": {
-        "build": "make",
         "clean": "make clean",
         "test":  "make test"
     }
