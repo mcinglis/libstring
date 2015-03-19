@@ -377,6 +377,15 @@ stringm__append( StringM * const s,
 }
 
 
+void
+stringm__nullterm( StringM * const s )
+{
+    if ( stringm__last( *s ) != '\0' ) {
+        stringm__append( s, '\0' );
+    }
+}
+
+
 void stringm__extend_stringc( StringM * const s, StringC const ext )
     { vec_char__extend_arrayc( s, ext ); }
 

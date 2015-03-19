@@ -11,14 +11,14 @@ Every version tag will be signed with [my GPG key](http://pool.sks-keyservers.ne
 
 ## Dependencies
 
-`Package.json` specifies the dependencies of Libstring: where to get them, and what version to use. I've developed a tool called [Puck](https://gitorious.org/mcinglis/puck) that will parse such a `Package.json`, download the specified repositories, check out the specified version, and, if the dependency has its own `Package.json`, repeat that process for *its* dependencies. With `puck` on your PATH, in the directory of Libstring:
+`Package.json` specifies the dependencies of Libstring: where to get them, and what version to use. I've developed a tool called [Puck](https://bitbucket.org/mcinglis/puck) that will parse such a `Package.json`, download the specified repositories, check out the specified version, and, if the dependency has its own `Package.json`, repeat that process for *its* dependencies. With `puck` on your PATH, in the directory of Libstring:
 
 ``` sh
 $ puck update
 $ puck execute build
 ```
 
-There's nothing magic to what Puck does, so if you would prefer, you can set up the dependencies manually. You just need to have the dependencies in the `deps` directory within the Libstring directory, and have them built (if necessary) before building Libstring
+There's nothing magic to what Puck does, so if you would prefer, you can set up the dependencies manually. You just need to have the dependencies in the `deps` directory within the Libstring directory, and have them built (if necessary) before building Libstring.
 
 There's no `build` command specified for Libstring, because you should manage the building of Libstring's sources in your own project. The dependencies rely on generated source files, and you would want to have that process integrated with the rest of your project, avoiding multiple libraries trying to generate the same file differently. Despite this, there is a `Makefile` provided with the bare minimum to build the tests.
 
