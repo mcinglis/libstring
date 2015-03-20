@@ -94,6 +94,118 @@ StringC stringc__view_str( char const * const str )
     { return stringc__new( str, strlen_null( str ) ); }
 
 
+char const *
+stringc__elements( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return s.e;
+}
+
+
+size_t
+stringc__length( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return s.length;
+}
+
+
+bool
+stringc__is_empty( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return stringc__length( s ) == 0;
+}
+
+
+bool
+stringc__isnt_empty( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return !stringc__is_empty( s );
+}
+
+
+char
+stringc__get( StringC const s,
+              size_t const index )
+{
+    ASSERT( stringc__is_valid( s ), index < stringc__length( s ) );
+
+    return *( stringc__get_ptr( s, index ) );
+}
+
+
+char const *
+stringc__get_ptr( StringC const s,
+                  size_t const index )
+{
+    ASSERT( stringc__is_valid( s ), index < stringc__length( s ) );
+
+    return stringc__elements( s ) + index;
+}
+
+
+char
+stringc__first( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ), stringc__isnt_empty( s ) );
+
+    return *( stringc__first_ptr( s ) );
+}
+
+
+char const *
+stringc__first_ptr( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return stringc__is_empty( s ) ? NULL : stringc__elements( s );
+}
+
+
+char
+stringc__last( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ), stringc__isnt_empty( s ) );
+
+    return *( stringc__last_ptr( s ) );
+}
+
+
+char const *
+stringc__last_ptr( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return stringc__is_empty( s )
+               ? NULL
+               : stringc__get_ptr( s, stringc__length( s ) - 1 );
+}
+
+
+bool
+stringc__last_is_null( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return stringc__isnt_empty( s ) && stringc__last( s ) == '\0';
+}
+
+
+bool
+stringc__last_isnt_null( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return !stringc__last_is_null( s );
+}
+
+
 bool
 stringc__equal_stringc( StringC const x,
                         StringC const y )
@@ -106,7 +218,7 @@ bool
 stringc__equal_stringm( StringC const x,
                         StringM const y )
 {
-    return stringc__equal( x, stringc__view( y ) );
+    return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
 
@@ -114,7 +226,7 @@ bool
 stringc__equal_arrayc( StringC const x,
                        ArrayC_char const y )
 {
-    return stringc__equal( x, stringc__view( y ) );
+    return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
 
@@ -122,7 +234,7 @@ bool
 stringc__equal_arraym( StringC const x,
                        ArrayM_char const y )
 {
-    return stringc__equal( x, stringc__view( y ) );
+    return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
 
@@ -130,7 +242,7 @@ bool
 stringc__equal_vec( StringC const x,
                     Vec_char const y )
 {
-    return stringc__equal( x, stringc__view( y ) );
+    return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
 
@@ -138,45 +250,7 @@ bool
 stringc__equal_str( StringC const x,
                     char const * const y )
 {
-    return stringc__equal( x, stringc__view( y ) );
-}
-
-
-char
-stringc__get( StringC const sc,
-              size_t const index )
-{
-    ASSERT( stringc__is_valid( sc ), index < sc.length );
-
-    return sc.e[ index ];
-}
-
-
-char const *
-stringc__get_ptr( StringC const sc,
-                  size_t const index )
-{
-    ASSERT( stringc__is_valid( sc ), index < sc.length );
-
-    return arrayc_char__get_ptr( sc, index );
-}
-
-
-char
-stringc__first( StringC const sc )
-{
-    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
-
-    return arrayc_char__first( sc );
-}
-
-
-char
-stringc__last( StringC const sc )
-{
-    ASSERT( stringc__is_valid( sc ), sc.length >= 1 );
-
-    return arrayc_char__last( sc );
+    return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
 
@@ -369,6 +443,118 @@ stringm__shrink_capacity( StringM * const s )
 }
 
 
+char *
+stringm__elements( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return s.e;
+}
+
+
+size_t
+stringm__length( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return s.length;
+}
+
+
+bool
+stringm__is_empty( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return stringm__length( s ) == 0;
+}
+
+
+bool
+stringm__isnt_empty( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return !stringm__is_empty( s );
+}
+
+
+char
+stringm__get( StringM const s,
+              size_t const index )
+{
+    ASSERT( stringm__is_valid( s ), index < stringm__length( s ) );
+
+    return *( stringm__get_ptr( s, index ) );
+}
+
+
+char *
+stringm__get_ptr( StringM const s,
+                  size_t const index )
+{
+    ASSERT( stringm__is_valid( s ), index < stringm__length( s ) );
+
+    return stringm__elements( s ) + index;
+}
+
+
+char
+stringm__first( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ), stringm__isnt_empty( s ) );
+
+    return *( stringm__first_ptr( s ) );
+}
+
+
+char *
+stringm__first_ptr( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return stringm__is_empty( s ) ? NULL : stringm__elements( s );
+}
+
+
+char
+stringm__last( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ), stringm__isnt_empty( s ) );
+
+    return *( stringm__last_ptr( s ) );
+}
+
+
+char *
+stringm__last_ptr( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return stringm__is_empty( s )
+               ? NULL
+               : stringm__get_ptr( s, stringm__length( s ) - 1 );
+}
+
+
+bool
+stringm__last_is_null( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return stringm__isnt_empty( s ) && stringm__last( s ) == '\0';
+}
+
+
+bool
+stringm__last_isnt_null( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return !stringm__last_is_null( s );
+}
+
+
 void
 stringm__append( StringM * const s,
                  char const c )
@@ -486,38 +672,6 @@ stringm__equal_str( StringM const x,
                     char const * const y )
 {
     return stringm__equal( x, stringc__view( y ) );
-}
-
-
-char
-stringm__get( StringM const sm,
-              size_t const index )
-{
-    return stringc__get( stringc__view( sm ), index );
-}
-
-
-char *
-stringm__get_ptr( StringM const sm,
-                  size_t const index )
-{
-    ASSERT( stringm__is_valid( sm ), index < sm.length );
-
-    return vec_char__get_ptr( sm, index );
-}
-
-
-char
-stringm__first( StringM const sm )
-{
-    return stringc__first( stringc__view( sm ) );
-}
-
-
-char
-stringm__last( StringM const sm )
-{
-    return stringc__last( stringc__view( sm ) );
 }
 
 

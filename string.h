@@ -66,20 +66,20 @@ StringC stringc__view_str    ( char const * str );
     )( X )
 
 
-bool stringc__equal_stringc( StringC, StringC );
-bool stringc__equal_stringm( StringC, StringM );
-bool stringc__equal_arrayc ( StringC, ArrayC_char );
-bool stringc__equal_arraym ( StringC, ArrayM_char );
-bool stringc__equal_vec    ( StringC, Vec_char );
-bool stringc__equal_str    ( StringC, char const * str );
+char const *
+stringc__elements( StringC );
 
-#define stringc__equal( STRING, X ) \
-    _Generic( ( X ), \
-        StringC:     stringc__equal_stringc, \
-        ArrayM_char: stringc__equal_arraym, \
-        StringM:     stringc__equal_stringm, \
-        default:     stringc__equal_str \
-    )( STRING, X )
+
+size_t
+stringc__length( StringC );
+
+
+bool
+stringc__is_empty( StringC );
+
+
+bool
+stringc__isnt_empty( StringC );
 
 
 char
@@ -96,8 +96,40 @@ char
 stringc__first( StringC );
 
 
+char const *
+stringc__first_ptr( StringC );
+
+
 char
 stringc__last( StringC );
+
+
+char const *
+stringc__last_ptr( StringC );
+
+
+bool
+stringc__last_is_null( StringC );
+
+
+bool
+stringc__last_isnt_null( StringC );
+
+
+bool stringc__equal_stringc( StringC, StringC );
+bool stringc__equal_stringm( StringC, StringM );
+bool stringc__equal_arrayc ( StringC, ArrayC_char );
+bool stringc__equal_arraym ( StringC, ArrayM_char );
+bool stringc__equal_vec    ( StringC, Vec_char );
+bool stringc__equal_str    ( StringC, char const * str );
+
+#define stringc__equal( STRING, X ) \
+    _Generic( ( X ), \
+        StringC:     stringc__equal_stringc, \
+        ArrayM_char: stringc__equal_arraym, \
+        StringM:     stringc__equal_stringm, \
+        default:     stringc__equal_str \
+    )( STRING, X )
 
 
 
@@ -193,6 +225,56 @@ void
 stringm__shrink_capacity( StringM * );
 
 
+char *
+stringm__elements( StringM );
+
+
+size_t
+stringm__length( StringM );
+
+
+bool
+stringm__is_empty( StringM );
+
+
+bool
+stringm__isnt_empty( StringM );
+
+
+char
+stringm__get( StringM,
+              size_t index );
+
+
+char *
+stringm__get_ptr( StringM,
+                  size_t index );
+
+
+char
+stringm__first( StringM );
+
+
+char *
+stringm__first_ptr( StringM );
+
+
+char
+stringm__last( StringM );
+
+
+char *
+stringm__last_ptr( StringM );
+
+
+bool
+stringm__last_is_null( StringM );
+
+
+bool
+stringm__last_isnt_null( StringM );
+
+
 void
 stringm__append( StringM *,
                  char );
@@ -245,24 +327,6 @@ bool stringm__equal_str( StringM, char const * str );
         StringM:     stringm__equal_stringm, \
         default:     stringm__equal_str \
     )( STRING, X )
-
-
-char
-stringm__get( StringM,
-              size_t index );
-
-
-char *
-stringm__get_ptr( StringM,
-                  size_t index );
-
-
-char
-stringm__first( StringM );
-
-
-char
-stringm__last( StringM );
 
 
 

@@ -23,15 +23,15 @@ main( void )
     StringM foo = stringm__copy( "foo" );
     ASSERT( foo.length == 3,
             foo.e[ 0 ] == 'f', foo.e[ 1 ] == 'o', foo.e[ 2 ] == 'o',
-            stringm__last( foo ) != '\0' );
+            stringm__last_isnt_null( foo ) );
     stringm__nullterm( &foo );
     ASSERT( foo.length == 4,
             stringm__equal( foo, ( StringC ) STRINGC0( "foo" ) ),
-            stringm__last( foo ) == '\0' );
+            stringm__last_is_null( foo ) );
     stringm__nullterm( &foo );
     ASSERT( foo.length == 4,
             stringm__equal( foo, ( StringC ) STRINGC0( "foo" ) ),
-            stringm__last( foo ) == '\0' );
+            stringm__last_is_null( foo ) );
     printf( "Null termination assertions passed!\n" );
 
 }
