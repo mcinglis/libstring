@@ -23,11 +23,12 @@
 
 #include <libtypes/types.h>
 #include <libmacro/logic.h>
-#include <libarray/def/array-char.h>
-#include <libvec/def/vec-char.h>
 
 
-typedef ArrayC_char StringC;
+typedef struct stringc {
+    char const * e;
+    size_t length;
+} StringC;
 
 #define STRINGC_INVARIANTS( S ) \
     IMPLIES( ( S ).e == NULL, ( S ).length == 0 )
@@ -41,7 +42,11 @@ typedef ArrayC_char StringC;
       .length = sizeof ( STR ) }
 
 
-typedef Vec_char StringM;
+typedef struct stringm {
+    char * e;
+    size_t length;
+    size_t capacity;
+} StringM;
 
 #define STRINGM_INVARIANTS( S ) \
     IMPLIES( ( S ).e == NULL, ( S ).length == 0 ), \

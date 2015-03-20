@@ -47,6 +47,8 @@ vasprintf_err( char * * const strp,
                char const * const format,
                va_list ap )
 {
+    ASSERT( strp != NULL, format != NULL );
+
     int const r = vasprintf( strp, format, ap );
     if ( r < 0 && !errno ) {
         errno = EIO;
@@ -78,20 +80,49 @@ stringc__new( char const * const str,
 }
 
 
-StringC stringc__view_stringm( StringM const s )
-    { return stringc__new( s.e, s.length ); }
+StringC
+stringc__view_stringm( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
 
-StringC stringc__view_arrayc( ArrayC_char const xs )
-    { return stringc__new( xs.e, xs.length ); }
+    return stringc__new( s.e, s.length );
+}
 
-StringC stringc__view_arraym( ArrayM_char const xs )
-    { return stringc__new( xs.e, xs.length ); }
 
-StringC stringc__view_vec( Vec_char const v )
-    { return stringc__new( v.e, v.length ); }
+StringC
+stringc__view_arrayc( ArrayC_char const xs )
+{
+    ASSERT( arrayc_char__is_valid( xs ) );
 
-StringC stringc__view_str( char const * const str )
-    { return stringc__new( str, strlen_null( str ) ); }
+    return stringc__new( xs.e, xs.length );
+}
+
+
+StringC
+stringc__view_arraym( ArrayM_char const xs )
+{
+    ASSERT( arraym_char__is_valid( xs ) );
+
+    return stringc__new( xs.e, xs.length );
+}
+
+
+StringC
+stringc__view_vec( Vec_char const v )
+{
+    ASSERT( vec_char__is_valid( v ) );
+
+    return stringc__new( v.e, v.length );
+}
+
+
+StringC
+stringc__view_str( char const * const str )
+{
+    ASSERT( str != NULL );
+
+    return stringc__new( str, strlen_null( str ) );
+}
 
 
 char const *
@@ -210,7 +241,10 @@ bool
 stringc__equal_stringc( StringC const x,
                         StringC const y )
 {
-    return arrayc_char__equal( x, y );
+    ASSERT( stringc__is_valid( x ), stringc__is_valid( y ) );
+
+    return arrayc_char__equal( arrayc_char__view_stringc( x ),
+                               arrayc_char__view_stringc( y ) );
 }
 
 
@@ -218,6 +252,8 @@ bool
 stringc__equal_stringm( StringC const x,
                         StringM const y )
 {
+    ASSERT( stringc__is_valid( x ), stringm__is_valid( y ) );
+
     return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
@@ -226,6 +262,8 @@ bool
 stringc__equal_arrayc( StringC const x,
                        ArrayC_char const y )
 {
+    ASSERT( stringc__is_valid( x ), arrayc_char__is_valid( y ) );
+
     return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
@@ -234,6 +272,8 @@ bool
 stringc__equal_arraym( StringC const x,
                        ArrayM_char const y )
 {
+    ASSERT( stringc__is_valid( x ), arraym_char__is_valid( y ) );
+
     return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
@@ -242,6 +282,8 @@ bool
 stringc__equal_vec( StringC const x,
                     Vec_char const y )
 {
+    ASSERT( stringc__is_valid( x ), vec_char__is_valid( y ) );
+
     return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
@@ -250,6 +292,8 @@ bool
 stringc__equal_str( StringC const x,
                     char const * const y )
 {
+    ASSERT( stringc__is_valid( x ), y != NULL );
+
     return stringc__equal_stringc( x, stringc__view( y ) );
 }
 
@@ -265,14 +309,18 @@ stringc__equal_str( StringC const x,
 bool
 stringm__is_valid( StringM const s )
 {
-    return vec_char__is_valid( s );
+    return ALL( STRINGM_INVARIANTS( s ) );
 }
 
 
 void
 stringm__free( StringM * const s )
 {
-    vec_char__free( s );
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__free( &v );
+    *s = stringm__view_vec( v );
 }
 
 
@@ -283,14 +331,14 @@ stringm__new( char const * const str,
 {
     ASSERT( IMPLIES( str == NULL, length == 0 ), length <= capacity );
 
-    return vec_char__new( str, length, capacity );
+    return stringm__view_vec( vec_char__new( str, length, capacity ) );
 }
 
 
 StringM
 stringm__new_empty( size_t const capacity )
 {
-    return vec_char__new_empty( capacity );
+    return stringm__view_vec( vec_char__new_empty( capacity ) );
 }
 
 
@@ -331,6 +379,8 @@ stringm__fmt_into( StringM * const s,
 StringM
 stringm__view_strm( char * const str )
 {
+    ASSERT( str != NULL );
+
     size_t const len = strlen_null( str );
     return ( StringM ){ .e = str, .length = len, .capacity = len };
 }
@@ -339,35 +389,74 @@ stringm__view_strm( char * const str )
 StringM
 stringm__view_arraym( ArrayM_char const xs )
 {
-    return vec_char__view_arraym( xs );
+    ASSERT( arraym_char__is_valid( xs ) );
+
+    return stringm__view_vec( vec_char__view_arraym( xs ) );
 }
 
 
 StringM
 stringm__view_vec( Vec_char const v )
 {
-    return v;
+    ASSERT( vec_char__is_valid( v ) );
+
+    return ( StringM ){ .e = v.e, .length = v.length, .capacity = v.capacity };
 }
 
 
-StringM stringm__copy_stringc( StringC const s )
-    { return stringm__new( s.e, s.length, s.length ); }
+StringM
+stringm__copy_stringc( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
 
-StringM stringm__copy_stringm( StringM const s )
-    { return stringm__new( s.e, s.length, s.capacity ); }
+    return stringm__new( s.e, s.length, s.length );
+}
 
-StringM stringm__copy_arrayc( ArrayC_char const xs )
-    { return stringm__new( xs.e, xs.length, xs.length ); }
 
-StringM stringm__copy_arraym( ArrayM_char const xs )
-    { return stringm__new( xs.e, xs.length, xs.length ); }
+StringM
+stringm__copy_stringm( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
 
-StringM stringm__copy_vec( Vec_char const v )
-    { return stringm__new( v.e, v.length, v.capacity ); }
+    return stringm__new( s.e, s.length, s.capacity );
+}
 
-StringM stringm__copy_str( char const * str )
-    { size_t const len = strlen_null( str );
-      return stringm__new( str, len, len ); }
+
+StringM
+stringm__copy_arrayc( ArrayC_char const xs )
+{
+    ASSERT( arrayc_char__is_valid( xs ) );
+
+    return stringm__new( xs.e, xs.length, xs.length );
+}
+
+
+StringM
+stringm__copy_arraym( ArrayM_char const xs )
+{
+    ASSERT( arraym_char__is_valid( xs ) );
+
+    return stringm__new( xs.e, xs.length, xs.length );
+}
+
+
+StringM
+stringm__copy_vec( Vec_char const v )
+{
+    ASSERT( vec_char__is_valid( v ) );
+
+    return stringm__new( v.e, v.length, v.capacity );
+}
+
+
+StringM
+stringm__copy_str( char const * str )
+{
+    ASSERT( str != NULL );
+
+    size_t const len = strlen_null( str );
+    return stringm__new( str, len, len );
+}
 
 
 void
@@ -385,6 +474,8 @@ void
 stringm__copy_stringm_into( StringM * const s,
                             StringM const from )
 {
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringm__is_valid( from ) );
+
     stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
@@ -393,6 +484,9 @@ void
 stringm__copy_arrayc_into( StringM * const s,
                            ArrayC_char const from )
 {
+    ASSERT( s != NULL, stringm__is_valid( *s ),
+            arrayc_char__is_valid( from ) );
+
     stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
@@ -401,6 +495,9 @@ void
 stringm__copy_arraym_into( StringM * const s,
                            ArrayM_char const from )
 {
+    ASSERT( s != NULL, stringm__is_valid( *s ),
+            arraym_char__is_valid( from ) );
+
     stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
@@ -409,6 +506,8 @@ void
 stringm__copy_vec_into( StringM * const s,
                         Vec_char const from )
 {
+    ASSERT( s != NULL, stringm__is_valid( *s ), vec_char__is_valid( from ) );
+
     stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
@@ -417,6 +516,8 @@ void
 stringm__copy_str_into( StringM * const s,
                         char const * const from )
 {
+    ASSERT( s != NULL, stringm__is_valid( *s ), from != NULL );
+
     stringm__copy_stringc_into( s, stringc__view( from ) );
 }
 
@@ -425,21 +526,104 @@ void
 stringm__realloc( StringM * const s,
                   size_t const new_capacity )
 {
-    vec_char__realloc( s, new_capacity );
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__realloc( &v, new_capacity );
+    *s = stringm__view_vec( v );
 }
 
 
 void
 stringm__grow_capacity( StringM * const s )
 {
-    vec_char__grow_capacity( s );
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__grow_capacity( &v );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__grow_capacity_by( StringM * const s,
+                           size_t const to_grow )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__grow_capacity_by( &v, to_grow );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__grow_capacity_for( StringM * const s,
+                            size_t const req_space )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__grow_capacity_for( &v, req_space );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__ensure_capacity( StringM * const s,
+                          size_t const min_capacity )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__ensure_capacity( &v, min_capacity );
+    *s = stringm__view_vec( v );
 }
 
 
 void
 stringm__shrink_capacity( StringM * const s )
 {
-    vec_char__shrink_capacity( s );
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__shrink_capacity( &v );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__shrink_capacity_to( StringM * const s,
+                             size_t const max_capacity )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__shrink_capacity_to( &v, max_capacity );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__shrink_capacity_by( StringM * const s,
+                             size_t const to_shrink )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__shrink_capacity_by( &v, to_shrink );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__free_spare_capacity( StringM * const s )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__free_spare_capacity( &v );
+    *s = stringm__view_vec( v );
 }
 
 
@@ -559,36 +743,85 @@ void
 stringm__append( StringM * const s,
                  char const c )
 {
-    vec_char__append( s, c );
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__append( &v, c );
+    *s = stringm__view_vec( v );
 }
 
 
 void
 stringm__nullterm( StringM * const s )
 {
-    if ( stringm__last( *s ) != '\0' ) {
+    ASSERT( s != NULL, stringm__is_valid( *s ) );
+
+    if ( stringm__last_isnt_null( *s ) ) {
         stringm__append( s, '\0' );
     }
 }
 
 
-void stringm__extend_stringc( StringM * const s, StringC const ext )
-    { vec_char__extend_arrayc( s, ext ); }
+void
+stringm__extend_stringc( StringM * const s,
+                         StringC const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( ext ) );
 
-void stringm__extend_stringm( StringM * const s, StringM const ext )
-    { vec_char__extend_vec( s, ext ); }
+    stringm__extend_arrayc( s, arrayc_char__view_stringc( ext ) );
+}
 
-void stringm__extend_arrayc( StringM * const s, ArrayC_char const ext )
-    { vec_char__extend_arrayc( s, ext ); }
 
-void stringm__extend_arraym( StringM * const s, ArrayM_char const ext )
-    { vec_char__extend_arraym( s, ext ); }
+void
+stringm__extend_stringm( StringM * const s,
+                         StringM const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringm__is_valid( ext ) );
 
-void stringm__extend_vec( StringM * const s, Vec_char const ext )
-    { vec_char__extend_vec( s, ext ); }
+    stringm__extend_arrayc( s, arrayc_char__view_stringm( ext ) );
+}
 
-void stringm__extend_str( StringM * const s, char const * const ext )
-    { stringm__extend_stringc( s, stringc__view( ext ) ); }
+
+void
+stringm__extend_arrayc( StringM * const s,
+                        ArrayC_char const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), arrayc_char__is_valid( ext ) );
+
+    Vec_char v = vec_char__view_stringm( *s );
+    vec_char__extend_arrayc( &v, ext );
+    *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__extend_arraym( StringM * const s,
+                        ArrayM_char const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), arraym_char__is_valid( ext ) );
+
+    stringm__extend_arrayc( s, arrayc_char__view_arraym( ext ) );
+}
+
+
+void
+stringm__extend_vec( StringM * const s,
+                     Vec_char const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), vec_char__is_valid( ext ) );
+
+    stringm__extend_arrayc( s, arrayc_char__view_vec( ext ) );
+}
+
+
+void
+stringm__extend_str( StringM * const s,
+                     char const * const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), ext != NULL );
+
+    stringm__extend_stringc( s, stringc__view( ext ) );
+}
 
 
 void
@@ -631,6 +864,8 @@ bool
 stringm__equal_stringc( StringM const x,
                         StringC const y )
 {
+    ASSERT( stringm__is_valid( x ), stringc__is_valid( y ) );
+
     return stringc__equal( stringc__view( x ), y );
 }
 
@@ -639,6 +874,8 @@ bool
 stringm__equal_stringm( StringM const x,
                         StringM const y )
 {
+    ASSERT( stringm__is_valid( x ), stringm__is_valid( y ) );
+
     return stringm__equal( x, stringc__view( y ) );
 }
 
@@ -647,6 +884,8 @@ bool
 stringm__equal_arrayc( StringM const x,
                        ArrayC_char const y )
 {
+    ASSERT( stringm__is_valid( x ), arrayc_char__is_valid( y ) );
+
     return stringm__equal( x, stringc__view( y ) );
 }
 
@@ -655,6 +894,8 @@ bool
 stringm__equal_arraym( StringM const x,
                        ArrayM_char const y )
 {
+    ASSERT( stringm__is_valid( x ), arraym_char__is_valid( y ) );
+
     return stringm__equal( x, stringc__view( y ) );
 }
 
@@ -663,6 +904,8 @@ bool
 stringm__equal_vec( StringM const x,
                     Vec_char const y )
 {
+    ASSERT( stringm__is_valid( x ), vec_char__is_valid( y ) );
+
     return stringm__equal( x, stringc__view( y ) );
 }
 
@@ -671,6 +914,8 @@ bool
 stringm__equal_str( StringM const x,
                     char const * const y )
 {
+    ASSERT( stringm__is_valid( x ), y != NULL );
+
     return stringm__equal( x, stringc__view( y ) );
 }
 
@@ -711,28 +956,38 @@ strm__copy_stringm( StringM const string )
 ArrayC_char
 arrayc_char__view_stringc( StringC const s )
 {
-    return s;
+    ASSERT( stringc__is_valid( s ) );
+
+    return ( ArrayC_char ){ .e = s.e, .length = s.length };
 }
 
 
 ArrayC_char
 arrayc_char__view_stringm( StringM const s )
 {
-    return arrayc_char__view_stringc( stringc__view_stringm( s ) );
+    ASSERT( stringm__is_valid( s ) );
+
+    return arrayc_char__view_vec( vec_char__view_stringm( s ) );
 }
 
 
 ArrayM_char
 arraym_char__view_stringm( StringM const s )
 {
-    return arraym_char__view_vec( s );
+    ASSERT( stringm__is_valid( s ) );
+
+    return arraym_char__view_vec( vec_char__view_stringm( s ) );
 }
 
 
 Vec_char
 vec_char__view_stringm( StringM const s )
 {
-    return s;
+    ASSERT( stringm__is_valid( s ) );
+
+    return ( Vec_char ){ .e = s.e,
+                         .length = s.length,
+                         .capacity = s.capacity };
 }
 
 

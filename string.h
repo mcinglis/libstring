@@ -24,6 +24,8 @@
 #include <stdarg.h>
 
 #include <libtypes/types.h>
+#include <libarray/def/array-char.h>
+#include <libvec/def/vec-char.h>
 
 #include "def/string.h"
 
@@ -59,6 +61,7 @@ StringC stringc__view_str    ( char const * str );
 
 #define stringc__view( X ) \
     _Generic( ( X ), \
+        StringM:     stringc__view_stringm, \
         ArrayC_char: stringc__view_arrayc, \
         ArrayM_char: stringc__view_arraym, \
         Vec_char:    stringc__view_vec, \
@@ -126,8 +129,10 @@ bool stringc__equal_str    ( StringC, char const * str );
 #define stringc__equal( STRING, X ) \
     _Generic( ( X ), \
         StringC:     stringc__equal_stringc, \
-        ArrayM_char: stringc__equal_arraym, \
         StringM:     stringc__equal_stringm, \
+        ArrayC_char: stringc__equal_arrayc, \
+        ArrayM_char: stringc__equal_arraym, \
+        Vec_char:    stringc__equal_vec, \
         default:     stringc__equal_str \
     )( STRING, X )
 
@@ -190,8 +195,10 @@ StringM stringm__copy_str    ( char const * str );
 #define stringm__copy( X ) \
     _Generic( ( X ), \
         StringC:     stringm__copy_stringc, \
-        ArrayM_char: stringm__copy_arraym, \
         StringM:     stringm__copy_stringm, \
+        ArrayC_char: stringm__copy_arrayc, \
+        ArrayM_char: stringm__copy_arraym, \
+        Vec_char:    stringm__copy_vec, \
         default:     stringm__copy_str \
     )( X )
 
@@ -206,8 +213,10 @@ void stringm__copy_str_into( StringM *, char const * );
 #define stringm__copy_into( S, FROM ) \
     _Generic( ( FROM ), \
         StringC:     stringm__copy_stringc_into, \
-        ArrayM_char: stringm__copy_arraym_into, \
         StringM:     stringm__copy_stringm_into, \
+        ArrayC_char: stringm__copy_arrayc_into, \
+        ArrayM_char: stringm__copy_arraym_into, \
+        Vec_char:    stringm__copy_vec_into, \
         default:     stringm__copy_str_into \
     )( S, FROM )
 
@@ -222,7 +231,36 @@ stringm__grow_capacity( StringM * );
 
 
 void
+stringm__grow_capacity_by( StringM *,
+                           size_t to_grow );
+
+
+void
+stringm__grow_capacity_for( StringM *,
+                            size_t req_space );
+
+
+void
+stringm__ensure_capacity( StringM *,
+                          size_t min_capacity );
+
+
+void
 stringm__shrink_capacity( StringM * );
+
+
+void
+stringm__shrink_capacity_to( StringM *,
+                             size_t max_capacity );
+
+
+void
+stringm__shrink_capacity_by( StringM *,
+                             size_t to_shrink );
+
+
+void
+stringm__free_spare_capacity( StringM * );
 
 
 char *
@@ -294,8 +332,10 @@ void stringm__extend_str    ( StringM *, char const * str );
 #define stringm__extend( STRING, EXT ) \
     _Generic( ( EXT ), \
         StringC:     stringm__extend_stringc, \
-        ArrayM_char: stringm__extend_arraym, \
         StringM:     stringm__extend_stringm, \
+        ArrayC_char: stringm__extend_arrayc, \
+        ArrayM_char: stringm__extend_arraym, \
+        Vec_char:    stringm__extend_vec, \
         default:     stringm__extend_str \
     )( STRING, EXT )
 
@@ -323,8 +363,10 @@ bool stringm__equal_str( StringM, char const * str );
 #define stringm__equal( STRING, X ) \
     _Generic( ( X ), \
         StringC:     stringm__equal_stringc, \
-        ArrayM_char: stringm__equal_arraym, \
         StringM:     stringm__equal_stringm, \
+        ArrayC_char: stringm__equal_arrayc, \
+        ArrayM_char: stringm__equal_arraym, \
+        Vec_char:    stringm__equal_vec, \
         default:     stringm__equal_str \
     )( STRING, X )
 
