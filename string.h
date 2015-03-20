@@ -30,14 +30,6 @@
 #include "def/string.h"
 
 
-// TODO: abstract this to a library / header file some day?
-#ifdef HAVE_ATTRIBUTE_FORMAT
-#define ATTR_FORMAT __attribute__((format(printf, 2, 3)))
-#else
-#define ATTR_FORMAT
-#endif
-
-
 
 ///////////////////////////////////
 /// STRINGC FUNCTIONS
@@ -164,7 +156,10 @@ stringm__new_empty( size_t capacity );
 StringM
 stringm__new_fmt( char const * format,
                   ... )
-    ATTR_FORMAT;
+#ifdef HAVE_ATTRIBUTE_FORMAT
+    __attribute__((format(printf, 1, 2)))
+#endif
+    ;
 
 
 void
@@ -344,7 +339,10 @@ void
 stringm__extend_fmt( StringM *,
                      char const * format,
                      ... )
-    ATTR_FORMAT;
+#ifdef HAVE_ATTRIBUTE_FORMAT
+    __attribute__((format(printf, 2, 3)))
+#endif
+    ;
 
 
 void
@@ -401,11 +399,6 @@ arraym_char__view_stringm( StringM );
 
 Vec_char
 vec_char__view_stringm( StringM );
-
-
-
-
-#undef ATTR_FORMAT
 
 
 #endif
