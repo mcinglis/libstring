@@ -60,6 +60,8 @@ StringC stringc__view_str    ( char const * str );
         default:     stringc__view_str \
     )( X )
 
+StringC stringc__view0_str( char const * str );
+
 
 char const *
 stringc__elements( StringC );
@@ -179,6 +181,8 @@ StringM stringm__view_vec   ( Vec_char );
         default:     stringm__view_strm \
     )( X )
 
+StringM stringm__view0_strm( char * str );
+
 
 StringM stringm__copy_stringc( StringC );
 StringM stringm__copy_stringm( StringM );
@@ -213,6 +217,42 @@ void stringm__copy_str_into( StringM *, char const * );
         ArrayM_char: stringm__copy_arraym_into, \
         Vec_char:    stringm__copy_vec_into, \
         default:     stringm__copy_str_into \
+    )( S, FROM )
+
+
+StringM stringm__copy0_stringc( StringC );
+StringM stringm__copy0_stringm( StringM );
+StringM stringm__copy0_arrayc ( ArrayC_char );
+StringM stringm__copy0_arraym ( ArrayM_char );
+StringM stringm__copy0_vec    ( Vec_char );
+StringM stringm__copy0_str    ( char const * str );
+
+#define stringm__copy0( X ) \
+    _Generic( ( X ), \
+        StringC:     stringm__copy0_stringc, \
+        StringM:     stringm__copy0_stringm, \
+        ArrayC_char: stringm__copy0_arrayc, \
+        ArrayM_char: stringm__copy0_arraym, \
+        Vec_char:    stringm__copy0_vec, \
+        default:     stringm__copy0_str \
+    )( X )
+
+
+void stringm__copy0_stringc_into( StringM *, StringC );
+void stringm__copy0_stringm_into( StringM *, StringM );
+void stringm__copy0_arrayc_into( StringM *, ArrayC_char );
+void stringm__copy0_arraym_into( StringM *, ArrayM_char );
+void stringm__copy0_vec_into( StringM *, Vec_char );
+void stringm__copy0_str_into( StringM *, char const * );
+
+#define stringm__copy0_into( S, FROM ) \
+    _Generic( ( FROM ), \
+        StringC:     stringm__copy0_stringc_into, \
+        StringM:     stringm__copy0_stringm_into, \
+        ArrayC_char: stringm__copy0_arrayc_into, \
+        ArrayM_char: stringm__copy0_arraym_into, \
+        Vec_char:    stringm__copy0_vec_into, \
+        default:     stringm__copy0_str_into \
     )( S, FROM )
 
 
@@ -335,6 +375,24 @@ void stringm__extend_str    ( StringM *, char const * str );
     )( STRING, EXT )
 
 
+void stringm__extend0_stringc( StringM *, StringC );
+void stringm__extend0_stringm( StringM *, StringM );
+void stringm__extend0_arrayc ( StringM *, ArrayC_char );
+void stringm__extend0_arraym ( StringM *, ArrayM_char );
+void stringm__extend0_vec    ( StringM *, Vec_char );
+void stringm__extend0_str    ( StringM *, char const * str );
+
+#define stringm__extend0( STRING, EXT ) \
+    _Generic( ( EXT ), \
+        StringC:     stringm__extend0_stringc, \
+        StringM:     stringm__extend0_stringm, \
+        ArrayC_char: stringm__extend0_arrayc, \
+        ArrayM_char: stringm__extend0_arraym, \
+        Vec_char:    stringm__extend0_vec, \
+        default:     stringm__extend0_str \
+    )( STRING, EXT )
+
+
 void
 stringm__extend_fmt( StringM *,
                      char const * format,
@@ -349,6 +407,22 @@ void
 stringm__extend_fmtv( StringM *,
                       char const * format,
                       va_list );
+
+
+void
+stringm__extend0_fmt( StringM *,
+                      char const * format,
+                      ... )
+#ifdef HAVE_ATTRIBUTE_FORMAT
+    __attribute__((format(printf, 2, 3)))
+#endif
+    ;
+
+
+void
+stringm__extend0_fmtv( StringM *,
+                       char const * format,
+                       va_list );
 
 
 bool stringm__equal_stringc( StringM, StringC );

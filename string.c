@@ -125,6 +125,15 @@ stringc__view_str( char const * const str )
 }
 
 
+StringC
+stringc__view0_str( char const * const str )
+{
+    ASSERT( str != NULL );
+
+    return stringc__new( str, strlen_null( str ) + 1 );
+}
+
+
 char const *
 stringc__elements( StringC const s )
 {
@@ -405,6 +414,16 @@ stringm__view_vec( Vec_char const v )
 
 
 StringM
+stringm__view0_strm( char * const str )
+{
+    ASSERT( str != NULL );
+
+    size_t const len = strlen_null( str );
+    return ( StringM ){ .e = str, .length = len + 1, .capacity = len + 1 };
+}
+
+
+StringM
 stringm__copy_stringc( StringC const s )
 {
     ASSERT( stringc__is_valid( s ) );
@@ -465,6 +484,8 @@ stringm__copy_stringc_into( StringM * const s,
 {
     ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( from ) );
 
+    stringm__ensure_capacity( s, from.length );
+    if ( errno ) { return; }
     s->length = 0;
     stringm__extend( s, from );
 }
@@ -519,6 +540,129 @@ stringm__copy_str_into( StringM * const s,
     ASSERT( s != NULL, stringm__is_valid( *s ), from != NULL );
 
     stringm__copy_stringc_into( s, stringc__view( from ) );
+}
+
+
+StringM
+stringm__copy0_stringc( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    StringM copy = { 0 };
+    stringm__copy0_into( &copy, s );
+    if ( errno ) { stringm__free( &copy ); }
+    return copy;
+}
+
+
+StringM
+stringm__copy0_stringm( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return stringm__copy0_stringc( stringc__view( s ) );
+}
+
+
+StringM
+stringm__copy0_arrayc( ArrayC_char const xs )
+{
+    ASSERT( arrayc_char__is_valid( xs ) );
+
+    return stringm__copy0_stringc( stringc__view( xs ) );
+}
+
+
+StringM
+stringm__copy0_arraym( ArrayM_char const xs )
+{
+    ASSERT( arraym_char__is_valid( xs ) );
+
+    return stringm__copy0_stringc( stringc__view( xs ) );
+}
+
+
+StringM
+stringm__copy0_vec( Vec_char const v )
+{
+    ASSERT( vec_char__is_valid( v ) );
+
+    return stringm__copy0_stringc( stringc__view( v ) );
+}
+
+
+StringM
+stringm__copy0_str( char const * str )
+{
+    ASSERT( str != NULL );
+
+    return stringm__copy0_stringc( stringc__view( str ) );
+}
+
+
+void
+stringm__copy0_stringc_into( StringM * const s,
+                             StringC const from )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( from ) );
+
+    stringm__ensure_capacity( s, from.length + stringc__last_isnt_null( from ) );
+    if ( errno ) { return; }
+    stringm__copy_into( s, from );
+    ASSERT( errno == 0 ); // no further allocation should have been required
+    stringm__nullterm( s );
+}
+
+
+void
+stringm__copy0_stringm_into( StringM * const s,
+                            StringM const from )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringm__is_valid( from ) );
+
+    stringm__copy0_stringc_into( s, stringc__view( from ) );
+}
+
+
+void
+stringm__copy0_arrayc_into( StringM * const s,
+                           ArrayC_char const from )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ),
+            arrayc_char__is_valid( from ) );
+
+    stringm__copy0_stringc_into( s, stringc__view( from ) );
+}
+
+
+void
+stringm__copy0_arraym_into( StringM * const s,
+                           ArrayM_char const from )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ),
+            arraym_char__is_valid( from ) );
+
+    stringm__copy0_stringc_into( s, stringc__view( from ) );
+}
+
+
+void
+stringm__copy0_vec_into( StringM * const s,
+                        Vec_char const from )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), vec_char__is_valid( from ) );
+
+    stringm__copy0_stringc_into( s, stringc__view( from ) );
+}
+
+
+void
+stringm__copy0_str_into( StringM * const s,
+                        char const * const from )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), from != NULL );
+
+    stringm__copy0_stringc_into( s, stringc__view( from ) );
 }
 
 
@@ -825,6 +969,75 @@ stringm__extend_str( StringM * const s,
 
 
 void
+stringm__extend0_stringc( StringM * const s,
+                          StringC const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringc__is_valid( ext ) );
+
+    if ( stringm__last_is_null( *s ) ) {
+        s->length--;
+    }
+    stringm__grow_capacity_for( s, ext.length + 1 );
+    if ( errno ) { return; }
+    // No further allocation should be required:
+    stringm__extend_stringc( s, ext );
+    ASSERT( !errno );
+    stringm__nullterm( s );
+    ASSERT( !errno );
+}
+
+
+void
+stringm__extend0_stringm( StringM * const s,
+                          StringM const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), stringm__is_valid( ext ) );
+
+    stringm__extend0_stringc( s, stringc__view( ext ) );
+}
+
+
+void
+stringm__extend0_arrayc( StringM * const s,
+                        ArrayC_char const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), arrayc_char__is_valid( ext ) );
+
+    stringm__extend0_stringc( s, stringc__view( ext ) );
+}
+
+
+void
+stringm__extend0_arraym( StringM * const s,
+                        ArrayM_char const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), arraym_char__is_valid( ext ) );
+
+    stringm__extend0_stringc( s, stringc__view( ext ) );
+}
+
+
+void
+stringm__extend0_vec( StringM * const s,
+                     Vec_char const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), vec_char__is_valid( ext ) );
+
+    stringm__extend0_stringc( s, stringc__view( ext ) );
+}
+
+
+void
+stringm__extend0_str( StringM * const s,
+                     char const * const ext )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), ext != NULL );
+
+    stringm__extend0_stringc( s, stringc__view( ext ) );
+}
+
+
+void
 stringm__extend_fmt( StringM * const s,
                      char const * const format,
                      ... )
@@ -848,15 +1061,44 @@ stringm__extend_fmtv( StringM * const s,
     ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
 
     errno = 0;
-    // TODO: asprintf is a non-standard GNU/BSD extension to libc; remove
-    // this and then remove `_GNU_SOURCE` definition in Makefile:
+    // TODO: asprintf is a non-standard GNU/BSD extension to libc; replace
     char * ext;
     vasprintf_err( &ext, format, ap );
     if ( errno ) { return; }
     stringm__extend_str( s, ext );
-    int const extend_err = errno;
     free( ext );
-    if ( extend_err ) { errno = extend_err; }
+}
+
+
+void
+stringm__extend0_fmt( StringM * const s,
+                      char const * const format,
+                      ... )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
+
+    va_list ap;
+    va_start( ap, format );
+    stringm__extend0_fmtv( s, format, ap );
+    int const err = errno;
+    va_end( ap );
+    if ( err ) { errno = err; }
+}
+
+
+void
+stringm__extend0_fmtv( StringM * const s,
+                       char const * const format,
+                       va_list ap )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
+
+    if ( stringm__last_is_null( *s ) ) {
+        s->length--;
+    }
+    stringm__extend_fmtv( s, format, ap );
+    if ( errno ) { return; }
+    stringm__nullterm( s );
 }
 
 
@@ -927,20 +1169,28 @@ stringm__equal_str( StringM const x,
 
 
 char *
-strm__copy_stringc( StringC const string )
+strm__copy_stringc( StringC const s )
 {
-    ASSERT( stringc__is_valid( string ) );
+    ASSERT( stringc__is_valid( s ) );
 
-    if ( string.length == SIZE_MAX ) {
-        errno = ENOBUFS;
-        return NULL;
-    }
     errno = 0;
-    char * const str = malloc( string.length + 1 );
-    if ( errno ) { return NULL; }
-    memcpy( str, string.e, string.length );
-    str[ string.length ] = '\0';
-    return str;
+    if ( stringc__last_is_null( s ) ) {
+        char * const str = malloc( s.length );
+        if ( errno ) { return NULL; }
+        memcpy( str, s.e, s.length );
+        ASSERT( str[ s.length ] == '\0' );
+        return str;
+    } else {
+        if ( s.length == SIZE_MAX ) {
+            errno = ENOBUFS;
+            return NULL;
+        }
+        char * const str = malloc( s.length + 1 );
+        if ( errno ) { return NULL; }
+        memcpy( str, s.e, s.length );
+        str[ s.length ] = '\0';
+        return str;
+    }
 }
 
 
