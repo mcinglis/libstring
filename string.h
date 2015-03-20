@@ -130,6 +130,8 @@ bool stringc__equal_str    ( StringC, char const * str );
         default:     stringc__equal_str \
     )( STRING, X )
 
+bool stringc__equal0_str( StringC, char const * str );
+
 
 
 ///////////////////////////////////
@@ -442,6 +444,8 @@ bool stringm__equal_str( StringM, char const * str );
         default:     stringm__equal_str \
     )( STRING, X )
 
+
+bool stringm__equal0_str( StringM, char const * str );
 
 
 

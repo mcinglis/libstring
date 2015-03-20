@@ -307,6 +307,16 @@ stringc__equal_str( StringC const x,
 }
 
 
+bool
+stringc__equal0_str( StringC const x,
+                     char const * const y )
+{
+    ASSERT( stringc__is_valid( x ), y != NULL );
+
+    return stringc__equal_stringc( x, stringc__view0_str( y ) );
+}
+
+
 
 
 
@@ -1159,6 +1169,16 @@ stringm__equal_str( StringM const x,
     ASSERT( stringm__is_valid( x ), y != NULL );
 
     return stringm__equal( x, stringc__view( y ) );
+}
+
+
+bool
+stringm__equal0_str( StringM const x,
+                    char const * const y )
+{
+    ASSERT( stringm__is_valid( x ), y != NULL );
+
+    return stringm__equal( x, stringc__view0_str( y ) );
 }
 
 
