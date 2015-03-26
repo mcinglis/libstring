@@ -396,6 +396,40 @@ stringm__fmt_into( StringM * const s,
 
 
 StringM
+stringm__new_fmt0( char const * const format,
+                   ... )
+{
+    ASSERT( format != NULL );
+
+    StringM s = ( StringM ){ 0 };
+    va_list ap;
+    va_start( ap, format );
+    stringm__extend0_fmtv( &s, format, ap );
+    int const err = errno;
+    va_end( ap );
+    if ( err ) { errno = err; }
+    return s;
+}
+
+
+void
+stringm__fmt0_into( StringM * const s,
+                    char const * const format,
+                    ... )
+{
+    ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
+
+    va_list ap;
+    va_start( ap, format );
+    s->length = 0;
+    stringm__extend0_fmtv( s, format, ap );
+    int const err = errno;
+    va_end( ap );
+    if ( err ) { errno = err; }
+}
+
+
+StringM
 stringm__view_strm( char * const str )
 {
     ASSERT( str != NULL );

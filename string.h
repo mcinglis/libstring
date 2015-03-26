@@ -172,6 +172,21 @@ stringm__fmt_into( StringM *,
                    ... );
 
 
+StringM
+stringm__new_fmt0( char const * format,
+                   ... )
+#ifdef HAVE_ATTRIBUTE_FORMAT
+    __attribute__((format(printf, 1, 2)))
+#endif
+    ;
+
+
+void
+stringm__fmt0_into( StringM *,
+                    char const * format,
+                    ... );
+
+
 StringM stringm__view_strm  ( char * str );
 StringM stringm__view_arraym( ArrayM_char );
 StringM stringm__view_vec   ( Vec_char );
