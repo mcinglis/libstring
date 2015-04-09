@@ -19,6 +19,7 @@
 
 #include "string.h"
 
+#include <ctype.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -28,6 +29,7 @@
 #include <libmacro/assert.h>    // ASSERT
 #include <libmacro/logic.h>     // IMPLIES
 #include <libmacro/minmax.h>    // MIN, MAX
+
 #include <libbase/size.h>       // size__*
 #include <libarray/array-char.h>
 #include <libvec/vec-char.h>
@@ -53,6 +55,26 @@ vasprintf_err( char * * const strp,
     if ( r < 0 && !errno ) {
         errno = EIO;
     }
+}
+
+
+static
+bool
+char_equal(
+        char const x,
+        char const y )
+{
+    return x == y;
+}
+
+
+static
+bool
+char_equal_i(
+        char const x,
+        char const y )
+{
+    return tolower( x ) == tolower( y );
 }
 
 
@@ -317,6 +339,59 @@ stringc__equal0_str( StringC const x,
 }
 
 
+StringM
+stringc__replaced_by(
+        StringC const xs,
+        char const el,
+        char const repl,
+        bool ( * const eq )( char x, char el ) )
+{
+    ASSERT( stringc__is_valid( xs ), eq != NULL );
+
+    return stringm__view(
+               arrayc_char__replaced_by( arrayc_char__view_stringc( xs ),
+                                         el, repl, eq ) );
+}
+
+
+StringM
+stringc__replaced(
+        StringC const xs,
+        char const el,
+        char const repl )
+{
+    ASSERT( stringc__is_valid( xs ) );
+
+    return stringc__replaced_by( xs, el, repl, char_equal );
+}
+
+
+StringM
+stringc__replaced_i(
+        StringC const xs,
+        char const el,
+        char const repl )
+{
+    ASSERT( stringc__is_valid( xs ) );
+
+    return stringc__replaced_by( xs, el, repl, char_equal_i );
+}
+
+
+StringM
+stringc__replacedf(
+        StringC const xs,
+        bool ( * const f )( char x ),
+        char const repl )
+{
+    ASSERT( stringc__is_valid( xs ), f != NULL );
+
+    return stringm__view(
+               arrayc_char__replacedf( arrayc_char__view_stringc( xs ),
+                                       f, repl ) );
+}
+
+
 
 
 
@@ -340,6 +415,15 @@ stringm__free( StringM * const s )
     Vec_char v = vec_char__view_stringm( *s );
     vec_char__free( &v );
     *s = stringm__view_vec( v );
+}
+
+
+void
+stringm__freev( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    vec_char__freev( vec_char__view_stringm( s ) );
 }
 
 
@@ -1216,7 +1300,53 @@ stringm__equal0_str( StringM const x,
 }
 
 
+void
+stringm__replace_by(
+        StringM const xs,
+        char const el,
+        char const repl,
+        bool ( * const eq )( char x, char el ) )
+{
+    ASSERT( stringm__is_valid( xs ), eq != NULL );
 
+    arraym_char__replace_by( arraym_char__view_stringm( xs ), el, repl, eq );
+}
+
+
+void
+stringm__replace(
+        StringM const xs,
+        char const el,
+        char const repl )
+{
+    ASSERT( stringm__is_valid( xs ) );
+
+    stringm__replace_by( xs, el, repl, char_equal );
+}
+
+
+void
+stringm__replace_i(
+        StringM const xs,
+        char const el,
+        char const repl )
+{
+    ASSERT( stringm__is_valid( xs ) );
+
+    stringm__replace_by( xs, el, repl, char_equal_i );
+}
+
+
+void
+stringm__replacef(
+        StringM const xs,
+        bool ( * const f )( char x ),
+        char const repl )
+{
+    ASSERT( stringm__is_valid( xs ), f != NULL );
+
+    arraym_char__replacef( arraym_char__view_stringm( xs ), f, repl );
+}
 
 
 

@@ -133,6 +133,35 @@ bool stringc__equal_str    ( StringC, char const * str );
 bool stringc__equal0_str( StringC, char const * str );
 
 
+StringM
+stringc__replaced_by(
+        StringC xs,
+        char element,
+        char replacement,
+        bool ( * eq )( char x, char el ) );
+
+
+StringM
+stringc__replaced(
+        StringC,
+        char element,
+        char replacement );
+
+
+StringM
+stringc__replaced_i(
+        StringC,
+        char element,
+        char replacement );
+
+
+StringM
+stringc__replacedf(
+        StringC xs,
+        bool ( * f )( char x ),
+        char replacement );
+
+
 
 ///////////////////////////////////
 /// STRINGM FUNCTIONS
@@ -145,6 +174,10 @@ stringm__is_valid( StringM );
 
 void
 stringm__free( StringM * );
+
+
+void
+stringm__freev( StringM );
 
 
 StringM
@@ -462,6 +495,34 @@ bool stringm__equal_str( StringM, char const * str );
 
 bool stringm__equal0_str( StringM, char const * str );
 
+
+void
+stringm__replace_by(
+        StringM xs,
+        char element,
+        char replacement,
+        bool ( * eq )( char x, char el ) );
+
+
+void
+stringm__replace(
+        StringM xs,
+        char element,
+        char replacement );
+
+
+void
+stringm__replace_i(
+        StringM xs,
+        char element,
+        char replacement );
+
+
+void
+stringm__replacef(
+        StringM xs,
+        bool ( * f )( char x ),
+        char replacement );
 
 
 
