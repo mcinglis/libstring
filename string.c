@@ -192,6 +192,25 @@ stringc__isnt_empty( StringC const s )
 }
 
 
+bool
+stringc__is_empty0( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return stringc__is_empty( s )
+        || stringc__equal0_str( s, "" );
+}
+
+
+bool
+stringc__isnt_empty0( StringC const s )
+{
+    ASSERT( stringc__is_valid( s ) );
+
+    return !stringc__is_empty0( s );
+}
+
+
 char
 stringc__get( StringC const s,
               size_t const index )
@@ -932,6 +951,25 @@ stringm__isnt_empty( StringM const s )
     ASSERT( stringm__is_valid( s ) );
 
     return !stringm__is_empty( s );
+}
+
+
+bool
+stringm__is_empty0( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return stringm__is_empty( s )
+        || stringm__equal0_str( s, "" );
+}
+
+
+bool
+stringm__isnt_empty0( StringM const s )
+{
+    ASSERT( stringm__is_valid( s ) );
+
+    return !stringm__is_empty0( s );
 }
 
 

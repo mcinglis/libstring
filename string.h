@@ -79,6 +79,14 @@ bool
 stringc__isnt_empty( StringC );
 
 
+bool
+stringc__is_empty0( StringC );
+
+
+bool
+stringc__isnt_empty0( StringC );
+
+
 char
 stringc__get( StringC,
               size_t index );
@@ -362,6 +370,14 @@ stringm__is_empty( StringM );
 
 bool
 stringm__isnt_empty( StringM );
+
+
+bool
+stringm__is_empty0( StringM );
+
+
+bool
+stringm__isnt_empty0( StringM );
 
 
 char
