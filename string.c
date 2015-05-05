@@ -738,32 +738,6 @@ stringm__into_vec(
 
 
 void
-stringm__into_stringm_with(
-        StringM const from,
-        StringM * const to,
-        void ( * const copier )( char from, char * to ) )
-{
-    ASSERT( stringm__is_valid( from ), to != NULL, stringm__is_valid( *to ) );
-
-    Vec_char to_vec = vec_char__view_stringm( *to );
-    vec_char__into_vec_with( vec_char__view_stringm( from ), &to_vec, copier );
-    *to = stringm__view( to_vec );
-}
-
-
-void
-stringm__into_vec_with(
-        StringM const from,
-        Vec_char * const to,
-        void ( * const copier )( char from, char * to ) )
-{
-    ASSERT( stringm__is_valid( from ), to != NULL, vec_char__is_valid( *to ) );
-
-    vec_char__into_vec_with( vec_char__view_stringm( from ), to, copier );
-}
-
-
-void
 stringm__realloc(
         StringM * const s,
         size_t const new_capacity )

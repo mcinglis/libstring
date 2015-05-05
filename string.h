@@ -304,20 +304,6 @@ stringm__into_vec(
 
 
 void
-stringm__into_stringm_with(
-        StringM from,
-        StringM * to,
-        void ( * copier )( char from, char * to ) );
-
-
-void
-stringm__into_vec_with(
-        StringM from,
-        Vec_char * to,
-        void ( * copier )( char from, char * to ) );
-
-
-void
 stringm__realloc(
         StringM *,
         size_t new_capacity );

@@ -20,7 +20,8 @@
         },
         { "repo": [ "https://bitbucket.org/mcinglis/libvec.git",
                     "https://github.com/mcinglis/libvec.git",
-                    "https://gitorious.org/mcinglis/libvec.git" ]
+                    "https://gitorious.org/mcinglis/libvec.git" ],
+          "tag":  "v0.5.*"
         },
         { "dev":  true,
           "repo": [ "https://bitbucket.org/mcinglis/tplrender.git",

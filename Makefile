@@ -17,7 +17,7 @@ CFLAGS ?= -std=c11 -g \
           -Wcomments -Wformat=2 -Wlogical-op -Wmissing-include-dirs \
           -Wnested-externs -Wold-style-definition -Wredundant-decls \
           -Wshadow -Wstrict-prototypes -Wunused-macros -Wvla -Wwrite-strings \
-          -Wno-override-init -Wno-unused-parameter
+          -Wno-override-init -Wno-type-limits -Wno-unused-parameter
 
 TPLRENDER ?= $(DEPS_DIR)/tplrender/tplrender
 
