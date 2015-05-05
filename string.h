@@ -41,8 +41,9 @@ stringc__is_valid( StringC );
 
 
 StringC
-stringc__new( char const * str,
-              size_t length );
+stringc__new(
+        char const * str,
+        size_t length );
 
 
 StringC stringc__view_stringm( StringM );
@@ -60,65 +61,87 @@ StringC stringc__view_str    ( char const * str );
         default:     stringc__view_str \
     )( X )
 
-StringC stringc__view0_str( char const * str );
+StringC
+stringc__view_str0(
+        char const * str );
 
 
 char const *
-stringc__elements( StringC );
+stringc__elements(
+        StringC );
 
 
 size_t
-stringc__length( StringC );
+stringc__length(
+        StringC );
 
 
 bool
-stringc__is_empty( StringC );
+stringc__same(
+        StringC,
+        StringC );
 
 
 bool
-stringc__isnt_empty( StringC );
+stringc__is_empty(
+        StringC );
 
 
 bool
-stringc__is_empty0( StringC );
+stringc__isnt_empty(
+        StringC );
 
 
 bool
-stringc__isnt_empty0( StringC );
+stringc__is_empty0(
+        StringC );
+
+
+bool
+stringc__isnt_empty0(
+        StringC );
 
 
 char
-stringc__get( StringC,
-              size_t index );
+stringc__get(
+        StringC,
+        size_t index );
 
 
 char const *
-stringc__get_ptr( StringC,
-                  size_t index );
+stringc__get_ptr(
+        StringC,
+        size_t index );
 
 
 char
-stringc__first( StringC );
+stringc__first(
+        StringC );
 
 
 char const *
-stringc__first_ptr( StringC );
+stringc__first_ptr(
+        StringC );
 
 
 char
-stringc__last( StringC );
+stringc__last(
+        StringC );
 
 
 char const *
-stringc__last_ptr( StringC );
+stringc__last_ptr(
+        StringC );
 
 
 bool
-stringc__last_is_null( StringC );
+stringc__last_is_null(
+        StringC );
 
 
 bool
-stringc__last_isnt_null( StringC );
+stringc__last_isnt_null(
+        StringC );
 
 
 bool stringc__equal_stringc( StringC, StringC );
@@ -137,8 +160,6 @@ bool stringc__equal_str    ( StringC, char const * str );
         Vec_char:    stringc__equal_vec, \
         default:     stringc__equal_str \
     )( STRING, X )
-
-bool stringc__equal0_str( StringC, char const * str );
 
 
 StringM
@@ -177,30 +198,36 @@ stringc__replacedf(
 
 
 bool
-stringm__is_valid( StringM );
+stringm__is_valid(
+        StringM );
 
 
 void
-stringm__free( StringM * );
+stringm__free(
+        StringM * );
 
 
 void
-stringm__freev( StringM );
+stringm__freev(
+        StringM );
 
 
 StringM
-stringm__new( char const * str,
-              size_t length,
-              size_t capacity );
+stringm__new(
+        char const * str,
+        size_t length,
+        size_t capacity );
 
 
 StringM
-stringm__new_empty( size_t capacity );
+stringm__new_empty(
+        size_t capacity );
 
 
 StringM
-stringm__new_fmt( char const * format,
-                  ... )
+stringm__new_fmt(
+        char const * format,
+        ... )
 #ifdef HAVE_ATTRIBUTE_FORMAT
     __attribute__((format(printf, 1, 2)))
 #endif
@@ -208,24 +235,10 @@ stringm__new_fmt( char const * format,
 
 
 void
-stringm__fmt_into( StringM *,
-                   char const * format,
-                   ... );
-
-
-StringM
-stringm__new_fmt0( char const * format,
-                   ... )
-#ifdef HAVE_ATTRIBUTE_FORMAT
-    __attribute__((format(printf, 1, 2)))
-#endif
-    ;
-
-
-void
-stringm__fmt0_into( StringM *,
-                    char const * format,
-                    ... );
+stringm__fmt_into(
+        StringM *,
+        char const * format,
+        ... );
 
 
 StringM stringm__view_strm  ( char * str );
@@ -239,7 +252,7 @@ StringM stringm__view_vec   ( Vec_char );
         default:     stringm__view_strm \
     )( X )
 
-StringM stringm__view0_strm( char * str );
+StringM stringm__view_strm0( char * str );
 
 
 StringM stringm__copy_stringc( StringC );
@@ -260,14 +273,14 @@ StringM stringm__copy_str    ( char const * str );
     )( X )
 
 
-void stringm__copy_stringc_into( StringM *, StringC );
-void stringm__copy_stringm_into( StringM *, StringM );
-void stringm__copy_arrayc_into( StringM *, ArrayC_char );
-void stringm__copy_arraym_into( StringM *, ArrayM_char );
-void stringm__copy_vec_into( StringM *, Vec_char );
-void stringm__copy_str_into( StringM *, char const * );
+void stringm__copy_stringc_into( StringC, StringM * );
+void stringm__copy_stringm_into( StringM, StringM * );
+void stringm__copy_arrayc_into( ArrayC_char, StringM * );
+void stringm__copy_arraym_into( ArrayM_char, StringM * );
+void stringm__copy_vec_into( Vec_char, StringM * );
+void stringm__copy_str_into( char const *, StringM * );
 
-#define stringm__copy_into( S, FROM ) \
+#define stringm__copy_into( FROM, INTO ) \
     _Generic( ( FROM ), \
         StringC:     stringm__copy_stringc_into, \
         StringM:     stringm__copy_stringm_into, \
@@ -275,152 +288,194 @@ void stringm__copy_str_into( StringM *, char const * );
         ArrayM_char: stringm__copy_arraym_into, \
         Vec_char:    stringm__copy_vec_into, \
         default:     stringm__copy_str_into \
-    )( S, FROM )
-
-
-StringM stringm__copy0_stringc( StringC );
-StringM stringm__copy0_stringm( StringM );
-StringM stringm__copy0_arrayc ( ArrayC_char );
-StringM stringm__copy0_arraym ( ArrayM_char );
-StringM stringm__copy0_vec    ( Vec_char );
-StringM stringm__copy0_str    ( char const * str );
-
-#define stringm__copy0( X ) \
-    _Generic( ( X ), \
-        StringC:     stringm__copy0_stringc, \
-        StringM:     stringm__copy0_stringm, \
-        ArrayC_char: stringm__copy0_arrayc, \
-        ArrayM_char: stringm__copy0_arraym, \
-        Vec_char:    stringm__copy0_vec, \
-        default:     stringm__copy0_str \
-    )( X )
-
-
-void stringm__copy0_stringc_into( StringM *, StringC );
-void stringm__copy0_stringm_into( StringM *, StringM );
-void stringm__copy0_arrayc_into( StringM *, ArrayC_char );
-void stringm__copy0_arraym_into( StringM *, ArrayM_char );
-void stringm__copy0_vec_into( StringM *, Vec_char );
-void stringm__copy0_str_into( StringM *, char const * );
-
-#define stringm__copy0_into( S, FROM ) \
-    _Generic( ( FROM ), \
-        StringC:     stringm__copy0_stringc_into, \
-        StringM:     stringm__copy0_stringm_into, \
-        ArrayC_char: stringm__copy0_arrayc_into, \
-        ArrayM_char: stringm__copy0_arraym_into, \
-        Vec_char:    stringm__copy0_vec_into, \
-        default:     stringm__copy0_str_into \
-    )( S, FROM )
+    )( FROM, INTO )
 
 
 void
-stringm__realloc( StringM *,
-                  size_t new_capacity );
+stringm__into_stringm(
+        StringM,
+        StringM * );
 
 
 void
-stringm__grow_capacity( StringM * );
+stringm__into_vec(
+        StringM,
+        Vec_char * );
 
 
 void
-stringm__grow_capacity_by( StringM *,
-                           size_t to_grow );
+stringm__into_stringm_with(
+        StringM from,
+        StringM * to,
+        void ( * copier )( char from, char * to ) );
 
 
 void
-stringm__grow_capacity_for( StringM *,
-                            size_t req_space );
+stringm__into_vec_with(
+        StringM from,
+        Vec_char * to,
+        void ( * copier )( char from, char * to ) );
 
 
 void
-stringm__ensure_capacity( StringM *,
-                          size_t min_capacity );
+stringm__realloc(
+        StringM *,
+        size_t new_capacity );
 
 
 void
-stringm__shrink_capacity( StringM * );
+stringm__grow_capacity(
+        StringM * );
 
 
 void
-stringm__shrink_capacity_to( StringM *,
-                             size_t max_capacity );
+stringm__grow_capacity_by(
+        StringM *,
+        size_t to_grow );
 
 
 void
-stringm__shrink_capacity_by( StringM *,
-                             size_t to_shrink );
+stringm__grow_capacity_for(
+        StringM *,
+        size_t req_space );
 
 
 void
-stringm__free_spare_capacity( StringM * );
+stringm__ensure_capacity(
+        StringM *,
+        size_t min_capacity );
+
+
+void
+stringm__shrink_capacity(
+        StringM * );
+
+
+void
+stringm__shrink_capacity_to(
+        StringM *,
+        size_t max_capacity );
+
+
+void
+stringm__shrink_capacity_by(
+        StringM *,
+        size_t to_shrink );
+
+
+void
+stringm__free_spare_capacity(
+        StringM * );
 
 
 char *
-stringm__elements( StringM );
+stringm__elements(
+        StringM );
 
 
 size_t
-stringm__length( StringM );
+stringm__length(
+        StringM );
 
 
 bool
-stringm__is_empty( StringM );
+stringm__same(
+        StringM,
+        StringM );
 
 
 bool
-stringm__isnt_empty( StringM );
+stringm__is_empty(
+        StringM );
 
 
 bool
-stringm__is_empty0( StringM );
+stringm__isnt_empty(
+        StringM );
 
 
 bool
-stringm__isnt_empty0( StringM );
+stringm__is_empty0(
+        StringM );
+
+
+bool
+stringm__isnt_empty0(
+        StringM );
 
 
 char
-stringm__get( StringM,
-              size_t index );
+stringm__get(
+        StringM,
+        size_t index );
 
 
 char *
-stringm__get_ptr( StringM,
-                  size_t index );
+stringm__get_ptr(
+        StringM,
+        size_t index );
 
 
 char
-stringm__first( StringM );
+stringm__first(
+        StringM );
 
 
 char *
-stringm__first_ptr( StringM );
+stringm__first_ptr(
+        StringM );
 
 
 char
-stringm__last( StringM );
+stringm__last(
+        StringM );
 
 
 char *
-stringm__last_ptr( StringM );
+stringm__last_ptr(
+        StringM );
 
 
 bool
-stringm__last_is_null( StringM );
+stringm__last_is_null(
+        StringM );
 
 
 bool
-stringm__last_isnt_null( StringM );
+stringm__last_isnt_null(
+        StringM );
 
 
 void
-stringm__append( StringM *,
-                 char );
+stringm__append(
+        StringM *,
+        char );
 
 
 void
-stringm__nullterm( StringM * );
+stringm__nullterm(
+        StringM * );
+
+
+char
+stringm__pop(
+        StringM * );
+
+
+void
+stringm__popn(
+        StringM *,
+        size_t n );
+
+
+bool
+stringm__pop_null(
+        StringM * );
+
+
+void
+stringm__empty(
+        StringM * );
 
 
 void stringm__extend_stringc( StringM *, StringC );
@@ -441,54 +496,22 @@ void stringm__extend_str    ( StringM *, char const * str );
     )( STRING, EXT )
 
 
-void stringm__extend0_stringc( StringM *, StringC );
-void stringm__extend0_stringm( StringM *, StringM );
-void stringm__extend0_arrayc ( StringM *, ArrayC_char );
-void stringm__extend0_arraym ( StringM *, ArrayM_char );
-void stringm__extend0_vec    ( StringM *, Vec_char );
-void stringm__extend0_str    ( StringM *, char const * str );
-
-#define stringm__extend0( STRING, EXT ) \
-    _Generic( ( EXT ), \
-        StringC:     stringm__extend0_stringc, \
-        StringM:     stringm__extend0_stringm, \
-        ArrayC_char: stringm__extend0_arrayc, \
-        ArrayM_char: stringm__extend0_arraym, \
-        Vec_char:    stringm__extend0_vec, \
-        default:     stringm__extend0_str \
-    )( STRING, EXT )
-
-
 void
-stringm__extend_fmt( StringM *,
-                     char const * format,
-                     ... )
+stringm__extend_fmt(
+        StringM *,
+        char const * format,
+        ... )
 #ifdef HAVE_ATTRIBUTE_FORMAT
-    __attribute__((format(printf, 2, 3)))
+    __attribute__( ( format( printf, 2, 3 ) ) )
 #endif
     ;
 
 
 void
-stringm__extend_fmtv( StringM *,
-                      char const * format,
-                      va_list );
-
-
-void
-stringm__extend0_fmt( StringM *,
-                      char const * format,
-                      ... )
-#ifdef HAVE_ATTRIBUTE_FORMAT
-    __attribute__((format(printf, 2, 3)))
-#endif
-    ;
-
-
-void
-stringm__extend0_fmtv( StringM *,
-                       char const * format,
-                       va_list );
+stringm__extend_fmtv(
+        StringM *,
+        char const * format,
+        va_list );
 
 
 bool stringm__equal_stringc( StringM, StringC );
@@ -507,9 +530,6 @@ bool stringm__equal_str( StringM, char const * str );
         Vec_char:    stringm__equal_vec, \
         default:     stringm__equal_str \
     )( STRING, X )
-
-
-bool stringm__equal0_str( StringM, char const * str );
 
 
 void
