@@ -224,23 +224,6 @@ stringm__new_empty(
         size_t capacity );
 
 
-StringM
-stringm__new_fmt(
-        char const * format,
-        ... )
-#ifdef HAVE_ATTRIBUTE_FORMAT
-    __attribute__((format(printf, 1, 2)))
-#endif
-    ;
-
-
-void
-stringm__fmt_into(
-        StringM *,
-        char const * format,
-        ... );
-
-
 StringM stringm__view_strm  ( char * str );
 StringM stringm__view_arraym( ArrayM_char );
 StringM stringm__view_vec   ( Vec_char );
@@ -480,24 +463,6 @@ void stringm__extend_str    ( StringM *, char const * str );
         Vec_char:    stringm__extend_vec, \
         default:     stringm__extend_str \
     )( STRING, EXT )
-
-
-void
-stringm__extend_fmt(
-        StringM *,
-        char const * format,
-        ... )
-#ifdef HAVE_ATTRIBUTE_FORMAT
-    __attribute__( ( format( printf, 2, 3 ) ) )
-#endif
-    ;
-
-
-void
-stringm__extend_fmtv(
-        StringM *,
-        char const * format,
-        va_list );
 
 
 bool stringm__equal_stringc( StringM, StringC );

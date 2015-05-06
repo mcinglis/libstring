@@ -21,9 +21,7 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>     // strlen
 
 #include <libmacro/assert.h>    // ASSERT
@@ -41,22 +39,6 @@ strlen_null(
         char const * const str )
 {
     return ( str == NULL ) ? 0 : strlen( str );
-}
-
-
-static
-void
-vasprintf_err(
-        char * * const strp,
-        char const * const format,
-        va_list ap )
-{
-    ASSERT( strp != NULL, format != NULL );
-
-    int const r = vasprintf( strp, format, ap );
-    if ( r < 0 && !errno ) {
-        errno = EIO;
-    }
 }
 
 
@@ -498,43 +480,6 @@ stringm__new_empty(
         size_t const capacity )
 {
     return stringm__view_vec( vec_char__new_empty( capacity ) );
-}
-
-
-StringM
-stringm__new_fmt(
-        char const * const format,
-        ... )
-{
-    ASSERT( format != NULL );
-
-    StringM s = ( StringM ){ 0 };
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( &s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-    return s;
-}
-
-
-void
-stringm__fmt_into(
-        StringM * const to,
-        char const * const format,
-        ... )
-{
-    ASSERT( to != NULL, stringm__is_valid( *to ), format != NULL );
-
-    errno = 0;
-    va_list ap;
-    va_start( ap, format );
-    stringm__empty( to );
-    stringm__extend_fmtv( to, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
 }
 
 
@@ -1151,41 +1096,6 @@ stringm__extend_str(
     ASSERT( s != NULL, stringm__is_valid( *s ), ext != NULL );
 
     stringm__extend_stringc( s, stringc__view( ext ) );
-}
-
-
-void
-stringm__extend_fmt(
-        StringM * const s,
-        char const * const format,
-        ... )
-{
-    ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
-
-    va_list ap;
-    va_start( ap, format );
-    stringm__extend_fmtv( s, format, ap );
-    int const err = errno;
-    va_end( ap );
-    if ( err ) { errno = err; }
-}
-
-
-void
-stringm__extend_fmtv(
-        StringM * const s,
-        char const * const format,
-        va_list ap )
-{
-    ASSERT( s != NULL, stringm__is_valid( *s ), format != NULL );
-
-    errno = 0;
-    // TODO: asprintf is a non-standard GNU/BSD extension to libc; replace
-    char * ext;
-    vasprintf_err( &ext, format, ap );
-    if ( errno ) { return; }
-    stringm__extend_str( s, ext );
-    free( ext );
 }
 
 
